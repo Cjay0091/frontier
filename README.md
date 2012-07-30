@@ -1,4 +1,8 @@
-frontier
-========
+## License
 
-the evelus runescape emulation base
+```
+Copyright (C) Evelus, All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential
+Written by Hadyn Richard <sini@evel.us>, July 2012
+```
