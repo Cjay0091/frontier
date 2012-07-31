@@ -148,9 +148,9 @@ public final class ItemSetup {
     private static void encodeDefinition( ItemDefinition itemDefinition , OutputStream os ) throws IOException
     {
         writeWord( os , itemDefinition.id );
-        os.write( 1 );
+        os.write(1);
         writeStr( os , itemDefinition.name );
-        os.write( 0 );
+        os.write(0);
     }
 
     /**

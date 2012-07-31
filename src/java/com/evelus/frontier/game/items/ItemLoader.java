@@ -7,12 +7,9 @@
 
 package com.evelus.frontier.game.items;
 
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.logging.*;
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Evelus Development
@@ -43,7 +40,7 @@ public final class ItemLoader {
     public static void loadConfig( String filePath ) {
         try {
             DataInputStream dis = new DataInputStream( new FileInputStream(filePath) );
-            ByteBuffer byteBuffer = ByteBuffer.allocate(dis.available());
+            ByteBuffer byteBuffer = ByteBuffer.allocate( dis.available() );
             dis.readFully( byteBuffer.array() );
             int amountDefs = byteBuffer.getShort();
             int maximumDef = byteBuffer.getShort();
@@ -58,9 +55,22 @@ public final class ItemLoader {
                     definition.load( opcode , byteBuffer );
                 }
             }
+            logger.log( Level.INFO , "Finished loading " + amountDefs + " item definitions..." );
             dis.close();
         } catch( IOException ioex ) {
-            logger.log(Level.INFO, "Failed to load the item configuration");
+            logger.log( Level.INFO , "Failed to load the item configuration" );
         }
+    }
+
+    /**
+     * Gets an item definition.
+     *
+     * @param id    The id of the definition to get.
+     * @return      The definition.
+     */
+    public static ItemDefinition getDefinition( int id ) {
+        if( id < 0 || id >= definitions.length)
+            return null;
+        return definitions[ id ];
     }
 }
