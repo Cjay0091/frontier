@@ -7,7 +7,6 @@
 
 package com.evelus.frontier.game.items;
 
-import com.evelus.frontier.io.Jagbuffer;
 import com.evelus.frontier.util.ByteBufferUtils;
 import java.nio.ByteBuffer;
 
