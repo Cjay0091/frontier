@@ -33,4 +33,45 @@ public final class Jagbuffer {
      */
     private int offset;
 
+    /**
+     * Gets the payload for this jagbuffer.
+     * 
+     * @return The payload.
+     */
+    public byte[] getPayload( )
+    {
+        return payload;
+    }
+
+    /**
+     * Sets the offset pointer of the payload.
+     * 
+     * @param offset The offset value.
+     */
+    public void setOffset( int offset )
+    {
+
+    }
+
+    /**
+     * Gets the offset pointer of the payload.
+     *
+     * @return The offset.
+     */
+    public int getOffset( )
+    {
+        return offset;
+    }
+
+    /**
+     * Gets a jagex formatted string from the payload.
+     *
+     * @return The string.
+     */
+    public String gjstr( )
+    {
+        int start = offset;
+        while( payload[ offset++ ] != 10 );
+        return new String( payload , start , offset - start - 1 );
+    }
 }
