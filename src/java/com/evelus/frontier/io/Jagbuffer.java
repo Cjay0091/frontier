@@ -15,7 +15,7 @@ public final class Jagbuffer {
 
     /**
      * Constructs a new {@link Jagbuffer};
-     * 
+     *
      * @param payload   The byte array payload to decode values from and encode
      *                  values to.
      */
@@ -35,7 +35,7 @@ public final class Jagbuffer {
 
     /**
      * Gets the payload for this jagbuffer.
-     * 
+     *
      * @return The payload.
      */
     public byte[] getPayload( )
@@ -45,12 +45,12 @@ public final class Jagbuffer {
 
     /**
      * Sets the offset pointer of the payload.
-     * 
+     *
      * @param offset The offset value.
      */
     public void setOffset( int offset )
     {
-
+        this.offset = offset;
     }
 
     /**
@@ -61,6 +61,19 @@ public final class Jagbuffer {
     public int getOffset( )
     {
         return offset;
+    }
+
+    /**
+     * Puts a jagex formatted string into the payload.
+     *
+     * @param str The string to encode into the payload.
+     */
+    public void pjstr( String str )
+    {
+        int length = str.length();
+        System.arraycopy( str.getBytes() , 0 , payload , offset , length );
+        payload[ offset + length ] = 10;
+        offset += length + 1;
     }
 
     /**
