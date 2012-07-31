@@ -85,8 +85,8 @@ public final class ItemSetup {
         Statement statement = connection.createStatement();
         int amountDefs = -1;
         try {
-            ResultSet results = statement.executeQuery("SELECT COUNT(*) FROM " + DEFS_TABLE);
-            if(results.next()) {
+            ResultSet results = statement.executeQuery( "SELECT COUNT(*) FROM " + DEFS_TABLE );
+            if( results.next()) {
                 amountDefs = results.getInt(1);
             }
         } finally {
@@ -107,7 +107,7 @@ public final class ItemSetup {
         Statement statement = connection.createStatement();
         int maximumId = 0;
         try {
-            ResultSet results = statement.executeQuery("SELECT item_id FROM " + DEFS_TABLE + " ORDER BY 1 DESC");
+            ResultSet results = statement.executeQuery( "SELECT item_id FROM " + DEFS_TABLE + " ORDER BY 1 DESC" );
             if(results.next()) {
                 maximumId = results.getInt(1);
             }
@@ -147,9 +147,10 @@ public final class ItemSetup {
      */
     private static void encodeDefinition( ItemDefinition itemDefinition , OutputStream os ) throws IOException
     {
-        writeWord( os, itemDefinition.id );
-        os.write(1);
-        writeStr(os, itemDefinition.name);
+        writeWord( os , itemDefinition.id );
+        os.write( 1 );
+        writeStr( os , itemDefinition.name );
+        os.write( 0 );
     }
 
     /**
