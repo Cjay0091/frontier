@@ -7,6 +7,7 @@
 
 package com.evelus.frontier.game;
 
+import com.evelus.frontier.Constants;
 import com.evelus.frontier.game.model.Player;
 import com.evelus.frontier.util.LinkedArrayList;
 import java.util.logging.Level;
@@ -56,7 +57,7 @@ public final class World implements Runnable {
      */
     private void initialize( )
     {
-        players = new LinkedArrayList<Player>(2048);
+        players = new LinkedArrayList<Player>( Constants.AMOUNT_PLAYERS );
     }
 
     @Override
@@ -73,6 +74,9 @@ public final class World implements Runnable {
                     player.update();
                     player.updateMovement();
                     player.updateLocation();
+                }
+                for(Player player : players) {
+                    player.updateLists();
                 }
                 long takenTime = System.currentTimeMillis() - startTime;
                 if(takenTime <= 600L) {

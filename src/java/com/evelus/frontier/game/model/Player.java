@@ -7,7 +7,9 @@
 
 package com.evelus.frontier.game.model;
 
+import com.evelus.frontier.Constants;
 import com.evelus.frontier.game.model.mob.PlayerUpdateBlock;
+import com.evelus.frontier.game.update.SceneList;
 
 /**
  * Evelus Development
@@ -22,12 +24,18 @@ public class Player extends Mob {
     {
         updatedSectorX = -1;
         updatedSectorY = -1;
+        initialize( );
     }
 
     /**
      * The update block for this player.
      */
     private PlayerUpdateBlock updateBlock;
+
+    /**
+     * The player scene list for this player.
+     */
+    private SceneList playerSceneList;
 
     /**
      * The updated map sector x coordinate.
@@ -38,6 +46,14 @@ public class Player extends Mob {
      * The updated map sector y coordinate.
      */
     private int updatedSectorY;
+
+    /**
+     * Initializes this player.
+     */
+    private void initialize( )
+    {
+        playerSceneList = new SceneList( SceneList.PLAYERS_TYPE , Constants.ENTITIES_IN_VIEW , Constants.AMOUNT_PLAYERS );
+    }
 
     @Override
     public void updateMovement( )
@@ -61,9 +77,18 @@ public class Player extends Mob {
     }
 
     @Override
-    public void update()
+    public void update( )
     {
         setUpdateHash( updateBlock.getFlags() );
         updateBlock.reset();
+    }
+
+    /**
+     * Updates all the lists for this player.
+     */
+    public void updateLists( )
+    {
+        Position position = getPosition( );
+        playerSceneList.update( position.getPositionX() , position.getPositionY() , position.getHeight() );
     }
 }
