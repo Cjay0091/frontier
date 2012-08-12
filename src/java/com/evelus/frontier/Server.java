@@ -7,6 +7,7 @@
 
 package com.evelus.frontier;
 
+import com.evelus.frontier.net.Session;
 import com.evelus.frontier.net.game.PipelineFactory;
 import com.evelus.frontier.util.LinkedArrayList;
 import java.net.InetSocketAddress;
@@ -20,7 +21,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class Server {
+public final class Server implements Runnable {
 
     /**
      * The logger instance for this class.
@@ -38,29 +39,75 @@ public final class Server {
     public final static int LIVE_STATE = 1;
 
     /**
-     * Prevent construction;
+     * The instance of this class.
      */
-    private Server ( ) { }
+    private static Server instance;
+
+    /**
+     * Constructs a new {@link Server};
+     */
+    private Server ( )
+    {
+        state = OFFLINE_STATE;
+        serverId = -1;
+    }
 
     /**
      * The server bootstrap for this server.
      */
-    private static ServerBootstrap serverBootstrap;
+    private ServerBootstrap serverBootstrap;
 
     /**
      * The id of this server.
      */
-    private static int serverId;
+    private int serverId;
     
     /**
      * The sessions currently active for this server.
      */
-    private static LinkedArrayList<Session> sessions;
+    private LinkedArrayList<Session> sessions;
 
     /**
      * The current state of this server.
      */
-    private static int state;
+    private int state;
+
+    /**
+     * The thread for this server.
+     */
+    private Thread thread;
+
+    /**
+     * Flag for if the handler thread is still active.
+     */
+    private boolean isRunning;
+
+    @Override
+    public void run() {
+        try {
+            for(;;) {
+                synchronized(this) {
+                    if(!isRunning)
+                        break;
+                }
+                long startTime = System.currentTimeMillis();
+                if( sessions.getSize() > 0 ) {
+                    for(Session session : sessions) {
+                        for( int i = 0 ; i < 5 ; i++ )
+                            if(!session.handleFrame())
+                                break;
+                        session.update();
+                    }
+                }
+                long takenTime = System.currentTimeMillis() - startTime;
+                if(takenTime <= 50L) {
+                    Thread.sleep(50L - takenTime);
+                }
+            }
+        } catch(Exception ex) {
+            logger.log(Level.INFO, "Exception caught while handling the server logic");
+        }
+    }
 
     /**
      * Registers a session to the server.
@@ -68,7 +115,7 @@ public final class Server {
      * @param session The session to register.
      * @return If the session was successfully registered.
      */
-    public static boolean registerSession( Session session )
+    public boolean registerSession( Session session )
     {
         int id = sessions.addElement( session );
         if( id == -1 )
@@ -82,7 +129,7 @@ public final class Server {
      *
      * @param session The session to unregister.
      */
-    public static void unregisterSession( Session session )
+    public void unregisterSession( Session session )
     {
         sessions.removeElement( session.getId() );
     }
@@ -92,7 +139,7 @@ public final class Server {
      *
      * @param i The id value.
      */
-    public static void setId( int i )
+    public void setId( int i )
     {
         serverId = i;
     }
@@ -102,7 +149,7 @@ public final class Server {
      *
      * @param i The state value.
      */
-    public static void setState( int i )
+    public void setState( int i )
     {
         if( i != state ) {
             if( i == LIVE_STATE ) {
@@ -111,8 +158,10 @@ public final class Server {
                 }
                 sessions = new LinkedArrayList<Session>( 2048 );
                 bind( 40000 + serverId );
+                start( );
             }
             if( i == OFFLINE_STATE ) {
+                hault( );
                 removeSessions( );
                 unbind( );
             }
@@ -126,7 +175,7 @@ public final class Server {
      *
      * @return The state.
      */
-    public static int getState( )
+    public int getState( )
     {
         return state;
     }
@@ -136,7 +185,7 @@ public final class Server {
      *
      * @param port The port to bind the server to.
      */
-    private static void bind( int port )
+    private void bind( int port )
     {
         serverBootstrap = new ServerBootstrap( new NioServerSocketChannelFactory(
                                                       Executors.newCachedThreadPool(),
@@ -149,7 +198,7 @@ public final class Server {
     /**
      * Removes all the sessions for the server.
      */
-    private static void removeSessions( )
+    private void removeSessions( )
     {
         sessions = null;
     }
@@ -157,11 +206,38 @@ public final class Server {
     /**
      * Unbinds the server bootstrap.
      */
-    private static void unbind( )
+    private void unbind( )
     {
         serverBootstrap.releaseExternalResources();
         serverBootstrap = null;
         logger.log(Level.INFO, "Server successfully unbound");
+    }
+
+    /**
+     * Starts the thread for this server.
+     */
+    private void start( )
+    {
+        if(!isRunning) {
+            isRunning = true;
+            thread = new Thread(this);
+            thread.start();
+        }
+    }
+
+    /**
+     * Haults the thread for this server.
+     */
+    private void hault( )
+    {
+        if(isRunning) {
+            synchronized(this) {
+                isRunning = false;
+            }
+            try {
+                thread.join();
+            } catch(Throwable t) { }
+        }
     }
 
     /**
@@ -182,8 +258,15 @@ public final class Server {
         }
     }
 
-    static {
-        state = OFFLINE_STATE;
-        serverId = -1;
+    /**
+     * Gets the instance of this server.
+     *
+     * @return The instance.
+     */
+    public static Server getInstance( )
+    {
+        if( instance == null )
+            instance = new Server();
+        return instance;
     }
 }

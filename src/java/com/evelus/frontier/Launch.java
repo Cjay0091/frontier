@@ -19,12 +19,12 @@ public final class Launch {
      */
     public static void main( String[] args )
     {
-        Server.setId( Integer.parseInt(args[0]) );
+        Server.getInstance().setId( Integer.parseInt(args[0]) );
         int state = -1;
         if( args[1].equals("live") ) {
             state = Server.LIVE_STATE;
         } else
             throw new RuntimeException("launch mode '" + args[1] + "' not recognized.");
-        Server.setState( state );
+        Server.getInstance().setState( state );
     }
 }
