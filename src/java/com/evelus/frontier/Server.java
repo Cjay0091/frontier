@@ -7,7 +7,8 @@
 
 package com.evelus.frontier;
 
-import com.evelus.frontier.net.Session;
+import com.evelus.frontier.game.World;
+import com.evelus.frontier.net.game.Session;
 import com.evelus.frontier.net.game.PipelineFactory;
 import com.evelus.frontier.util.LinkedArrayList;
 import java.net.InetSocketAddress;

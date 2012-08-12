@@ -7,8 +7,8 @@
 
 package com.evelus.frontier.net.game.codec;
 
-import com.evelus.frontier.net.IncomingFrame;
-import com.evelus.frontier.net.Session;
+import com.evelus.frontier.net.game.IncomingFrame;
+import com.evelus.frontier.net.game.Session;
 import com.evelus.frontier.util.ISAACCipher;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -8,7 +8,6 @@
 package com.evelus.frontier.net.game;
 
 import com.evelus.frontier.Server;
-import com.evelus.frontier.net.Session;
 import com.evelus.frontier.net.game.codec.Decoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;

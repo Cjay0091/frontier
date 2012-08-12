@@ -8,9 +8,6 @@
 package com.evelus.frontier.net.game;
 
 import com.evelus.frontier.io.Buffer;
-import com.evelus.frontier.net.IncomingFrame;
-import com.evelus.frontier.net.Session;
-import com.evelus.frontier.net.SessionHandler;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
@@ -120,6 +117,8 @@ public final class OdHandler implements SessionHandler {
      */
     private void parseArchiveRequest( Buffer buffer , boolean isPriority )
     {
+        if( state == -1)
+            throw new IllegalStateException( "client state undeclared" );
         int hash = buffer.getUtri();
         if( isPriority ) {
             priorityRequests.add( hash );

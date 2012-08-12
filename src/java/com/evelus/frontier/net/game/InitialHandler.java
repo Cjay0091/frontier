@@ -8,9 +8,6 @@
 package com.evelus.frontier.net.game;
 
 import com.evelus.frontier.io.Buffer;
-import com.evelus.frontier.net.IncomingFrame;
-import com.evelus.frontier.net.Session;
-import com.evelus.frontier.net.SessionHandler;
 import com.evelus.frontier.net.game.codec.OdDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
