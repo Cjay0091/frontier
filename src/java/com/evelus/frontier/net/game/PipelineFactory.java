@@ -31,6 +31,7 @@ public final class PipelineFactory implements ChannelPipelineFactory {
     public ChannelPipeline getPipeline( ) throws Exception
     {
         ChannelPipeline pipeline = Channels.pipeline();
+        pipeline.addFirst( "handler" , ChannelHandler.getInstance() );
         return pipeline;
     }
 

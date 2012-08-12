@@ -50,7 +50,7 @@ public final class IncomingFrame {
      *
      * @return The buffer.
      */
-    public byte[] getBuffer( )
+    public byte[] getPayload( )
     {
         return buffer;
     }

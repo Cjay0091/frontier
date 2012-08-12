@@ -64,15 +64,29 @@ public final class Buffer {
     }
 
     /**
+     * Gets a dword value from the payload.
+     *
+     * @return The dword value.
+     */
+    public int getDword( )
+    {
+        offset += 4;
+        return (payload[offset - 4] & 0xFF) << 24 |
+               (payload[offset - 3] & 0xFF) << 16 |
+               (payload[offset - 2] & 0xFF) << 8  |
+                payload[offset - 1] & 0xFF;
+    }
+
+    /**
      * Puts a jagex formatted string into the payload.
      *
      * @param str The string to encode into the payload.
      */
-    public void pjstr( String str )
+    public void putJstr( String str )
     {
         int length = str.length();
         System.arraycopy( str.getBytes() , 0 , payload , offset , length );
-        payload[ offset + length ] = 10;
+        payload[ offset + length ] = 0;
         offset += length + 1;
     }
 
@@ -81,10 +95,10 @@ public final class Buffer {
      *
      * @return The string.
      */
-    public String gjstr( )
+    public String getJstr( )
     {
         int start = offset;
-        while( payload[ offset++ ] != 10 );
+        while( payload[ offset++ ] != 0 );
         return new String( payload , start , offset - start - 1 );
     }
 }

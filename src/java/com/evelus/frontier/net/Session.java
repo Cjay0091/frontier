@@ -9,6 +9,7 @@ package com.evelus.frontier.net;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import org.jboss.netty.channel.Channel;
 
 /**
  * Evelus Development
@@ -18,11 +19,19 @@ public final class Session {
 
     /**
      * Constructs a new {@link Session};
+     *
+     * @param channel The channel for this session.
      */
-    public Session ( )
+    public Session ( Channel channel )
     {
         frameQueue = new LinkedList<IncomingFrame>();
+        this.channel = channel;
     }
+
+    /**
+     * The channel for this session.
+     */
+    private Channel channel;
 
     /**
      * The handler for this session.
@@ -40,6 +49,16 @@ public final class Session {
     private int id;
 
     /**
+     * Gets the channel for this session.
+     *
+     * @return The channel.
+     */
+    public Channel getChannel( )
+    {
+        return channel;
+    }
+
+    /**
      * Sets the handler for this session.
      *
      * @param handler The handler.
@@ -47,6 +66,16 @@ public final class Session {
     public void setHandler( SessionHandler handler )
     {
         this.handler = handler;
+    }
+
+    /**
+     * Queues an incoming frame for this session.
+     *
+     * @param frame The frame to queue.
+     */
+    public void queueFrame( IncomingFrame frame )
+    {
+        frameQueue.add( frame );
     }
 
     /**
@@ -58,7 +87,7 @@ public final class Session {
     {
         if( handler == null || frameQueue.isEmpty() )
             return false;
-        handler.handleIncomingFrame( frameQueue.poll() );
+        handler.handleIncomingFrame( this , frameQueue.poll() );
         return true;
     }
 

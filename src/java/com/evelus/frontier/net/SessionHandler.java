@@ -16,9 +16,10 @@ public interface SessionHandler {
     /**
      * Handles an incoming frame.
      *
+     * @param session The session from which the frame came from.
      * @param incomingFrame The incoming frame to handle.
      */
-    public void handleIncomingFrame( IncomingFrame incomingFrame );
+    public void handleIncomingFrame( Session session, IncomingFrame incomingFrame );
 
     /**
      * Handles an update.
