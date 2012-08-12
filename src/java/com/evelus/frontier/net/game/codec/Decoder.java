@@ -80,8 +80,10 @@ public final class Decoder extends OneToOneDecoder {
                     size = buffer.readByte() & 0xFF;
                 else if( size == WORD_SIZE )
                     size = buffer.readShort() & 0xFFFF;
-                if( buffer.readableBytes() < size )
-                    break;
+                if( buffer.readableBytes() < size ) {
+                    logger.log(Level.INFO, "Incomplete frame sent from client [id=" + id + "]");
+                    return false;
+                }
                 IncomingFrame frame = new IncomingFrame( id , size );
                 buffer.readBytes( frame.getPayload() );
                 session.queueFrame( frame );
