@@ -25,6 +25,7 @@ public final class LinkedArrayList<T> implements Iterable<T> {
         head.prev = head;
         head.next = head;
         nodes = new Node[ listSize ];
+        unusedElements = new Stack<Node>();
         this.listSize = listSize;
         initialize();
     }
