@@ -64,6 +64,40 @@ public final class Buffer {
     }
 
     /**
+     * Gets an unsigned byte from the payload.
+     *
+     * @return The byte value.
+     */
+    public int getUbyte( )
+    {
+        return payload[ offset++ ] & 0xFF;
+    }
+
+    /**
+     * Gets an unsigned word from the payload.
+     *
+     * @return The word value.
+     */
+    public int getUword( )
+    {
+        offset += 2;
+        return (payload[ offset - 2 ] & 0xFF) << 8 | (payload[ offset - 1] & 0xFF);
+    }
+
+    /**
+     * Gets an unsigned tri from the payload.
+     *
+     * @return The tri value.
+     */
+    public int getUtri( )
+    {
+        offset += 3;
+        return (payload[ offset - 3 ] & 0xFF) << 16 | 
+               (payload[ offset - 2 ] & 0xFF) << 8  |
+               (payload[ offset - 1] & 0xFF);
+    }
+
+    /**
      * Gets a dword value from the payload.
      *
      * @return The dword value.

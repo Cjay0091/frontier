@@ -10,7 +10,6 @@ package com.evelus.frontier.net.game;
 import com.evelus.frontier.Server;
 import com.evelus.frontier.net.Session;
 import com.evelus.frontier.net.game.codec.Decoder;
-import com.evelus.frontier.net.impl.InitialHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;

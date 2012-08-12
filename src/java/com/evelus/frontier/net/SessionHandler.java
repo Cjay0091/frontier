@@ -23,7 +23,9 @@ public interface SessionHandler {
 
     /**
      * Handles an update.
+     *
+     * @param session The session to update.
      */
-    public void update( );
+    public void update( Session session );
 
 }

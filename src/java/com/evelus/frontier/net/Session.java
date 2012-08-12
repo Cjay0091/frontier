@@ -7,6 +7,7 @@
 
 package com.evelus.frontier.net;
 
+import com.evelus.frontier.util.ISAACCipher;
 import java.util.LinkedList;
 import java.util.Queue;
 import org.jboss.netty.channel.Channel;
@@ -42,6 +43,11 @@ public final class Session {
      * The queue of incoming frames.
      */
     private Queue<IncomingFrame> frameQueue;
+
+    /**
+     * The incoming isaac cipher for this session.
+     */
+    private ISAACCipher incomingIsaac;
 
     /**
      * The id of this session.
@@ -97,7 +103,7 @@ public final class Session {
     public void update()
     {
         if( handler != null )
-            handler.update();
+            handler.update( this );
     }
 
     /**
@@ -118,5 +124,15 @@ public final class Session {
     public int getId( )
     {
         return id;
+    }
+
+    /**
+     * Gets the incoming ISAAC.
+     *
+     * @return The incoming ISAAC.
+     */
+    public ISAACCipher getIncomingIsaac( )
+    {
+        return incomingIsaac;
     }
 }

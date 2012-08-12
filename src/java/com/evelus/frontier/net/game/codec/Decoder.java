@@ -51,7 +51,7 @@ public final class Decoder extends OneToOneDecoder {
     /**
      * Constructs a new {@link Decoder};
      */
-    public Decoder ( Session session ) 
+    public Decoder ( Session session )
     {
         this.session = session;
     }
@@ -61,19 +61,14 @@ public final class Decoder extends OneToOneDecoder {
      */
     private Session session;
 
-    /**
-     * The ISAAC cipher for this decoder.
-     */
-    private ISAACCipher isaacCipher;
-
     @Override
     protected Object decode(ChannelHandlerContext chc, Channel chnl, Object obj) throws Exception {
         if( obj instanceof ChannelBuffer ) {
             ChannelBuffer buffer = (ChannelBuffer) obj;
             while( buffer.readableBytes() > 0 ) {
                 int id = buffer.readByte();
-                if( isaacCipher != null ) {
-                    id = id - isaacCipher.getNextValue();
+                if( session.getIncomingIsaac() != null ) {
+                    id = id - session.getIncomingIsaac().getNextValue();
                 }
                 id &= 0xFF;
                 int size = FRAME_SIZES[ id ];
