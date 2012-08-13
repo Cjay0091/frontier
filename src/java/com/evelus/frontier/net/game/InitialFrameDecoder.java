@@ -20,25 +20,25 @@ import org.jboss.netty.channel.ChannelFutureListener;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public class InitialHandler implements SessionHandler {
+public class InitialFrameDecoder implements FrameDecoder {
 
     /**
      * The logger instance for this class.
      */
-    private static final Logger logger = Logger.getLogger(InitialHandler.class.getSimpleName());
+    private static final Logger logger = Logger.getLogger(InitialFrameDecoder.class.getSimpleName());
 
     /**
      * The instance of this class.
      */
-    private static InitialHandler instance;
+    private static InitialFrameDecoder instance;
 
     /**
      * Constructs a new {@link InitialHandler};
      */
-    private InitialHandler ( ) { }
+    private InitialFrameDecoder ( ) { }
 
     @Override
-    public void handleIncomingFrame( Session session , IncomingFrame incomingFrame )
+    public void decode( Session session , IncomingFrame incomingFrame )
     {
         int id = incomingFrame.getId();
         Buffer buffer = new Buffer( incomingFrame.getPayload() );
@@ -51,9 +51,6 @@ public class InitialHandler implements SessionHandler {
                 return;
         }
     }
-
-    @Override
-    public void update( Session session ) { }
 
     /**
      * Handles an incoming ondemand connection request.
@@ -70,8 +67,8 @@ public class InitialHandler implements SessionHandler {
             channelBuffer.writeByte(6);
             channel.write( channelBuffer ).addListener(ChannelFutureListener.CLOSE);
         } else {
-            channel.getPipeline().replace( "decoder" , "oddecoder" , new OdDecoder(session) );
-            session.setHandler( new OdHandler() );
+            channel.getPipeline().replace( "decoder" , "oddecoder" , OdDecoder.getInstance() );
+            session.setFrameDecoder( new OdFrameDecoder() );
             ChannelBuffer channelBuffer = ChannelBuffers.buffer(1);
             channelBuffer.writeByte(0);
             channel.write( channelBuffer );
@@ -83,10 +80,10 @@ public class InitialHandler implements SessionHandler {
      *
      * @return The instance.
      */
-    public static InitialHandler getInstance( )
+    public static InitialFrameDecoder getInstance( )
     {
         if( instance == null )
-            instance = new InitialHandler( );
+            instance = new InitialFrameDecoder( );
         return instance;
     }
 }

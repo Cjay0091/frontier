@@ -7,7 +7,6 @@
 
 package com.evelus.frontier;
 
-import com.evelus.frontier.game.World;
 import com.evelus.frontier.net.game.Session;
 import com.evelus.frontier.net.game.PipelineFactory;
 import com.evelus.frontier.util.LinkedArrayList;
@@ -22,7 +21,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class Server implements Runnable {
+public final class Server {
 
     /**
      * The logger instance for this class.
@@ -79,38 +78,6 @@ public final class Server implements Runnable {
     private Thread thread;
 
     /**
-     * Flag for if the handler thread is still active.
-     */
-    private boolean isRunning;
-
-    @Override
-    public void run() {
-        try {
-            for(;;) {
-                synchronized(this) {
-                    if(!isRunning)
-                        break;
-                }
-                long startTime = System.currentTimeMillis();
-                if( sessions.getSize() > 0 ) {
-                    for(Session session : sessions) {
-                        for( int i = 0 ; i < 5 ; i++ )
-                            if(!session.handleFrame())
-                                break;
-                        session.update();
-                    }
-                }
-                long takenTime = System.currentTimeMillis() - startTime;
-                if(takenTime <= 50L) {
-                    Thread.sleep(50L - takenTime);
-                }
-            }
-        } catch(Exception ex) {
-            logger.log(Level.INFO, "Exception caught while handling the server logic");
-        }
-    }
-
-    /**
      * Registers a session to the server.
      *
      * @param session The session to register.
@@ -159,10 +126,8 @@ public final class Server implements Runnable {
                 }
                 sessions = new LinkedArrayList<Session>( 2048 );
                 bind( 40000 + serverId );
-                start( );
             }
             if( i == OFFLINE_STATE ) {
-                hault( );
                 removeSessions( );
                 unbind( );
             }
@@ -212,33 +177,6 @@ public final class Server implements Runnable {
         serverBootstrap.releaseExternalResources();
         serverBootstrap = null;
         logger.log(Level.INFO, "Server successfully unbound");
-    }
-
-    /**
-     * Starts the thread for this server.
-     */
-    private void start( )
-    {
-        if(!isRunning) {
-            isRunning = true;
-            thread = new Thread(this);
-            thread.start();
-        }
-    }
-
-    /**
-     * Haults the thread for this server.
-     */
-    private void hault( )
-    {
-        if(isRunning) {
-            synchronized(this) {
-                isRunning = false;
-            }
-            try {
-                thread.join();
-            } catch(Throwable t) { }
-        }
     }
 
     /**

@@ -9,19 +9,18 @@ package com.evelus.frontier.net.game.codec;
 
 import com.evelus.frontier.net.game.IncomingFrame;
 import com.evelus.frontier.net.game.Session;
-import com.evelus.frontier.util.ISAACCipher;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
+import org.jboss.netty.handler.codec.frame.FrameDecoder;
 
 /**
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class Decoder extends OneToOneDecoder {
+public final class Decoder extends FrameDecoder {
 
     /**
      * The instance logger for this class.
@@ -62,35 +61,30 @@ public final class Decoder extends OneToOneDecoder {
     private Session session;
 
     @Override
-    protected Object decode(ChannelHandlerContext chc, Channel chnl, Object obj) throws Exception {
-        if( obj instanceof ChannelBuffer ) {
-            ChannelBuffer buffer = (ChannelBuffer) obj;
-            while( buffer.readableBytes() > 0 ) {
-                int id = buffer.readByte();
-                if( session.getIncomingIsaac() != null ) {
-                    id = id - session.getIncomingIsaac().getNextValue();
-                }
-                id &= 0xFF;
-                int size = FRAME_SIZES[ id ];
-                if( size == UNUSED) {
-                    logger.log(Level.INFO, "Unused frame sent from client [id=" + id + "]");
-                    return false;
-                }
-                if( size == BYTE_SIZE )
-                    size = buffer.readByte() & 0xFF;
-                else if( size == WORD_SIZE )
-                    size = buffer.readShort() & 0xFFFF;
-                if( buffer.readableBytes() < size ) {
-                    logger.log(Level.INFO, "Incomplete frame sent from client [id=" + id + "]");
-                    return false;
-                }
-                IncomingFrame frame = new IncomingFrame( id , size );
-                buffer.readBytes( frame.getPayload() );
-                session.queueFrame( frame );
-            }
-            return true;
-        } else
-            throw new RuntimeException();
+    protected Object decode(ChannelHandlerContext chc, Channel chnl, ChannelBuffer buffer) throws Exception {
+        int id = buffer.readByte();
+        if( session.getIncomingIsaac() != null ) {
+            id = id - session.getIncomingIsaac().getNextValue();
+        }
+        id &= 0xFF;
+        int size = FRAME_SIZES[ id ];
+        if( size == UNUSED) {
+            buffer.readerIndex( buffer.capacity() );
+            logger.log(Level.INFO, "Unused frame sent from client [id=" + id + "]");
+            return IncomingFrame.INVALID_FRAME;
+        }
+        if( size == BYTE_SIZE )
+            size = buffer.readByte() & 0xFF;
+        else if( size == WORD_SIZE )
+            size = buffer.readShort() & 0xFFFF;
+        if( buffer.readableBytes() < size ) {
+            buffer.readerIndex( buffer.capacity() );
+            logger.log(Level.INFO, "Incomplete frame sent from client [id=" + id + "]");
+            return IncomingFrame.INVALID_FRAME;
+        }
+        IncomingFrame frame = new IncomingFrame( id , size );
+        buffer.readBytes( frame.getPayload() );
+        return frame;
     }
 
     static {

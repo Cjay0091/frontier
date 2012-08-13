@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 
@@ -44,7 +45,7 @@ public final class ChannelHandler extends SimpleChannelHandler {
             ctx.getChannel().close();
             return;
         }
-        session.setHandler( InitialHandler.getInstance() );
+        session.setFrameDecoder( InitialFrameDecoder.getInstance() );
         logger.log(Level.INFO, "Connection accepted [address=" + ctx.getChannel().getRemoteAddress() + "]");
         ctx.getChannel().getPipeline().addFirst( "decoder" , new Decoder( session ) );
         ctx.setAttachment( session );
@@ -59,12 +60,21 @@ public final class ChannelHandler extends SimpleChannelHandler {
     
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        if( !(e.getMessage() instanceof Boolean) )
+        if( !(e.getMessage() instanceof IncomingFrame) )
             throw new RuntimeException();
-        boolean isValid = (Boolean) e.getMessage();
-        if( isValid )
+        Session session = (Session) ctx.getAttachment();
+        IncomingFrame frame = (IncomingFrame) e.getMessage();
+        if(frame == IncomingFrame.INVALID_FRAME) {
+            session.destroy();
             return;
-        ctx.getChannel().close();
+        }
+        session.getFrameDecoder().decode(session, frame);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+        Session session = (Session) ctx.getAttachment();
+        session.destroy();
     }
 
     /**

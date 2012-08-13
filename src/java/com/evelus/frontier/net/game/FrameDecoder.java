@@ -11,11 +11,14 @@ package com.evelus.frontier.net.game;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public interface SessionHandler {
+public interface FrameDecoder {
 
     /**
-     * Destroys this session handler.
+     * Decodes an incoming frame.
+     *
+     * @param session The session from which the frame came from.
+     * @param incomingFrame The incoming frame to handle.
      */
-    public void destroy();
+    public void decode( Session session, IncomingFrame incomingFrame );
 
 }

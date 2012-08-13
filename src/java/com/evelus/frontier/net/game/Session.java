@@ -8,8 +8,6 @@
 package com.evelus.frontier.net.game;
 
 import com.evelus.frontier.util.ISAACCipher;
-import java.util.LinkedList;
-import java.util.Queue;
 import org.jboss.netty.channel.Channel;
 
 /**
@@ -25,7 +23,6 @@ public final class Session {
      */
     public Session ( Channel channel )
     {
-        frameQueue = new LinkedList<IncomingFrame>();
         this.channel = channel;
     }
 
@@ -35,14 +32,14 @@ public final class Session {
     private Channel channel;
 
     /**
+     * The frame decoder for this session.
+     */
+    private FrameDecoder frameDecoder;
+
+    /**
      * The handler for this session.
      */
     private SessionHandler handler;
-
-    /**
-     * The queue of incoming frames.
-     */
-    private Queue<IncomingFrame> frameQueue;
 
     /**
      * The incoming isaac cipher for this session.
@@ -65,45 +62,33 @@ public final class Session {
     }
 
     /**
-     * Sets the handler for this session.
+     * Sets the frame decoder for this session.
      *
-     * @param handler The handler.
+     * @param frameDecoder The frame decoder.
+     */
+    public void setFrameDecoder( FrameDecoder frameDecoder )
+    {
+        this.frameDecoder = frameDecoder;
+    }
+
+    /**
+     * Gets the frame decoder of this session.
+     *
+     * @return The frame decoder.
+     */
+    public FrameDecoder getFrameDecoder( )
+    {
+        return frameDecoder;
+    }
+
+    /**
+     * Sets the handler of this session.
+     *
+     * @param handler The session handler.
      */
     public void setHandler( SessionHandler handler )
     {
         this.handler = handler;
-    }
-
-    /**
-     * Queues an incoming frame for this session.
-     *
-     * @param frame The frame to queue.
-     */
-    public void queueFrame( IncomingFrame frame )
-    {
-        frameQueue.add( frame );
-    }
-
-    /**
-     * Handles an incoming frame for this session.
-     *
-     * @return If a frame was handled.
-     */
-    public boolean handleFrame( )
-    {
-        if( handler == null || frameQueue.isEmpty() )
-            return false;
-        handler.handleIncomingFrame( this , frameQueue.poll() );
-        return true;
-    }
-
-    /**
-     * Updates this session.
-     */
-    public void update()
-    {
-        if( handler != null )
-            handler.update( this );
     }
 
     /**
@@ -134,5 +119,15 @@ public final class Session {
     public ISAACCipher getIncomingIsaac( )
     {
         return incomingIsaac;
+    }
+
+    /**
+     * Destroys this session.
+     */
+    public void destroy( )
+    {
+        if( handler != null )
+            handler.destroy();
+        channel.close();
     }
 }

@@ -14,13 +14,13 @@ import java.util.logging.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
+import org.jboss.netty.handler.codec.frame.FrameDecoder;
 
 /**
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class OdDecoder extends OneToOneDecoder {
+public final class OdDecoder extends FrameDecoder {
 
     /**
      * The logger instance for this class.
@@ -28,41 +28,41 @@ public final class OdDecoder extends OneToOneDecoder {
     private static final Logger logger = Logger.getLogger(OdDecoder.class.getSimpleName());
 
     /**
-     * Constructs a new {@link OdDecoder};
-     *
-     * @param session The session for this decoder.
+     * The instance of this class.
      */
-    public OdDecoder ( Session session )
+    private static OdDecoder instance;
+
+    /**
+     * Constructs a new {@link OdDecoder};
+     */
+    private OdDecoder ( ) { }
+
+    @Override
+    protected Object decode( ChannelHandlerContext chc , Channel chnl , ChannelBuffer channelBuffer ) throws Exception
     {
-        this.session = session;
+        boolean isIncomplete = channelBuffer.readableBytes() < 3;
+        int id = channelBuffer.readByte() & 0xFF;
+        if( id > 4 || isIncomplete ) {
+            if( isIncomplete )
+                logger.log(Level.INFO, "Incomplete request sent from client [id=" + id + "]");
+            else
+                logger.log(Level.INFO, "Unknown request sent from client [id=" + id + "]");
+            return IncomingFrame.INVALID_FRAME;
+        }
+        IncomingFrame incomingFrame = new IncomingFrame(id, 3);
+        channelBuffer.readBytes( incomingFrame.getPayload() );
+        return incomingFrame;
     }
 
     /**
-     * The session for this decoder.
+     * Gets the instance of this class.
+     *
+     * @return The instance.
      */
-    private Session session;
-
-    @Override
-    protected Object decode( ChannelHandlerContext chc , Channel chnl , Object obj ) throws Exception
+    public static OdDecoder getInstance( )
     {
-        if( obj instanceof ChannelBuffer ) {
-            ChannelBuffer channelBuffer = (ChannelBuffer) obj;
-            while( channelBuffer.readableBytes() > 0 ) {
-                int id = channelBuffer.readByte() & 0xFF;
-                if( id > 4 ) {
-                    logger.log(Level.INFO, "Unknown request sent from client [id=" + id + "]");
-                    return false;
-                }
-                if( channelBuffer.readableBytes() < 3 ) {
-                    logger.log(Level.INFO, "Incomplete request sent from client [id=" + id + "]");
-                    return false;
-                }
-                IncomingFrame incomingFrame = new IncomingFrame(id, 3);
-                channelBuffer.readBytes( incomingFrame.getPayload() );
-                session.queueFrame( incomingFrame );
-            }
-            return true;
-        } else
-            throw new RuntimeException();
+        if( instance == null )
+            instance = new OdDecoder();
+        return instance;
     }
 }

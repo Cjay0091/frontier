@@ -14,6 +14,11 @@ package com.evelus.frontier.net.game;
 public final class IncomingFrame {
 
     /**
+     * The invalid frame instance.
+     */
+    public static final IncomingFrame INVALID_FRAME = new IncomingFrame( -1 , 0 );
+
+    /**
      * Constructs a new {@link IncomingFrame};
      *
      * @param id The id of the frame.
