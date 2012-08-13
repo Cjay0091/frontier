@@ -94,9 +94,9 @@ public final class Decoder extends FrameDecoder {
             if( buffer.readableBytes() < required )
                 return null;
             if( frameSize == BYTE_SIZE )
-                frameSize = buffer.readByte();
+                frameSize = buffer.readByte() & 0xFF;
             else if( frameSize == WORD_SIZE )
-                frameSize = buffer.readShort();
+                frameSize = buffer.readShort() & 0xFFFF;
         }
         if( buffer.readableBytes() < frameSize )
             return null;
