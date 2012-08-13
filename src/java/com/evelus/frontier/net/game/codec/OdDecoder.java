@@ -35,7 +35,10 @@ public final class OdDecoder extends FrameDecoder {
     /**
      * Constructs a new {@link OdDecoder};
      */
-    public OdDecoder ( ) { }
+    public OdDecoder ( )
+    {
+        frameId = -1;
+    }
 
     /**
      * The id of the current frame being parsed.
@@ -48,6 +51,7 @@ public final class OdDecoder extends FrameDecoder {
         if( frameId == -1 ) {
             frameId = channelBuffer.readByte() & 0xFF;
             if( frameId > 4 ) {
+                channelBuffer.readerIndex( channelBuffer.capacity() );
                 logger.log(Level.INFO, "Unused frame sent from client [id=" + frameId + "]");
                 return IncomingFrame.INVALID_FRAME;
             }

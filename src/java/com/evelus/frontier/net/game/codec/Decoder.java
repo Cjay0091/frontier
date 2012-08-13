@@ -54,7 +54,6 @@ public final class Decoder extends FrameDecoder {
     {
         this.session = session;
         frameId = -1;
-        frameSize = -3;
     }
 
     /**
