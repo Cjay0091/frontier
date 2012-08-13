@@ -53,6 +53,8 @@ public final class Decoder extends FrameDecoder {
     public Decoder ( Session session )
     {
         this.session = session;
+        frameId = -1;
+        frameSize = -3;
     }
 
     /**
@@ -60,30 +62,48 @@ public final class Decoder extends FrameDecoder {
      */
     private Session session;
 
+    /**
+     * The current frame id.
+     */
+    private int frameId;
+
+    /**
+     * The current frame size.
+     */
+    private int frameSize;
+
     @Override
     protected Object decode(ChannelHandlerContext chc, Channel chnl, ChannelBuffer buffer) throws Exception {
-        int id = buffer.readByte();
-        if( session.getIncomingIsaac() != null ) {
-            id = id - session.getIncomingIsaac().getNextValue();
+        if( frameId == -1 ) {
+            frameId = buffer.readByte();
+            if( session.getIncomingIsaac() != null ) {
+                frameId = frameId - session.getIncomingIsaac().getNextValue();
+            }
+            frameId &= 0xFF;
+            frameSize = FRAME_SIZES[ frameId ];
+            if( frameSize == UNUSED) {
+                buffer.readerIndex( buffer.capacity() );
+                logger.log(Level.INFO, "Unused frame sent from client [id=" + frameId + "]");
+                return IncomingFrame.INVALID_FRAME;
+            }
         }
-        id &= 0xFF;
-        int size = FRAME_SIZES[ id ];
-        if( size == UNUSED) {
-            buffer.readerIndex( buffer.capacity() );
-            logger.log(Level.INFO, "Unused frame sent from client [id=" + id + "]");
-            return IncomingFrame.INVALID_FRAME;
+        if( frameSize == BYTE_SIZE || frameSize == WORD_SIZE ) {
+            int required = 1;
+            if( frameSize == WORD_SIZE ) {
+                required = 2;
+            }
+            if( buffer.readableBytes() < required )
+                return null;
+            if( frameSize == BYTE_SIZE )
+                frameSize = buffer.readByte();
+            else if( frameSize == WORD_SIZE )
+                frameSize = buffer.readShort();
         }
-        if( size == BYTE_SIZE )
-            size = buffer.readByte() & 0xFF;
-        else if( size == WORD_SIZE )
-            size = buffer.readShort() & 0xFFFF;
-        if( buffer.readableBytes() < size ) {
-            buffer.readerIndex( buffer.capacity() );
-            logger.log(Level.INFO, "Incomplete frame sent from client [id=" + id + "]");
-            return IncomingFrame.INVALID_FRAME;
-        }
-        IncomingFrame frame = new IncomingFrame( id , size );
+        if( buffer.readableBytes() < frameSize )
+            return null;
+        IncomingFrame frame = new IncomingFrame( frameId , frameSize );
         buffer.readBytes( frame.getPayload() );
+        frameId = -1;
         return frame;
     }
 

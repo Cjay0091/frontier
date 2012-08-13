@@ -67,7 +67,7 @@ public class InitialFrameDecoder implements FrameDecoder {
             channelBuffer.writeByte(6);
             channel.write( channelBuffer ).addListener(ChannelFutureListener.CLOSE);
         } else {
-            channel.getPipeline().replace( "decoder" , "oddecoder" , OdDecoder.getInstance() );
+            channel.getPipeline().replace( "decoder" , "oddecoder" , new OdDecoder() );
             session.setFrameDecoder( new OdFrameDecoder() );
             ChannelBuffer channelBuffer = ChannelBuffers.buffer(1);
             channelBuffer.writeByte(0);

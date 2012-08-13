@@ -35,34 +35,27 @@ public final class OdDecoder extends FrameDecoder {
     /**
      * Constructs a new {@link OdDecoder};
      */
-    private OdDecoder ( ) { }
+    public OdDecoder ( ) { }
+
+    /**
+     * The id of the current frame being parsed.
+     */
+    private int frameId;
 
     @Override
     protected Object decode( ChannelHandlerContext chc , Channel chnl , ChannelBuffer channelBuffer ) throws Exception
     {
-        boolean isIncomplete = channelBuffer.readableBytes() < 3;
-        int id = channelBuffer.readByte() & 0xFF;
-        if( id > 4 || isIncomplete ) {
-            if( isIncomplete )
-                logger.log(Level.INFO, "Incomplete request sent from client [id=" + id + "]");
-            else
-                logger.log(Level.INFO, "Unknown request sent from client [id=" + id + "]");
-            return IncomingFrame.INVALID_FRAME;
+        if( frameId == -1 ) {
+            frameId = channelBuffer.readByte() & 0xFF;
+            if( frameId > 4 ) {
+                logger.log(Level.INFO, "Unused frame sent from client [id=" + frameId + "]");
+                return IncomingFrame.INVALID_FRAME;
+            }
         }
-        IncomingFrame incomingFrame = new IncomingFrame(id, 3);
+        if( channelBuffer.readableBytes() < 4 )
+            return null;
+        IncomingFrame incomingFrame = new IncomingFrame( frameId , 3 );
         channelBuffer.readBytes( incomingFrame.getPayload() );
         return incomingFrame;
-    }
-
-    /**
-     * Gets the instance of this class.
-     *
-     * @return The instance.
-     */
-    public static OdDecoder getInstance( )
-    {
-        if( instance == null )
-            instance = new OdDecoder();
-        return instance;
     }
 }
