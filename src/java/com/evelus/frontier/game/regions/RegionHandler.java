@@ -8,9 +8,9 @@
 package com.evelus.frontier.game.regions;
 
 import com.evelus.frontier.game.model.Position;
+import com.evelus.frontier.io.Buffer;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
-import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,10 +44,22 @@ public final class RegionHandler {
     {
         try {
             DataInputStream dis = new DataInputStream( new FileInputStream(filePath) );
-            ByteBuffer byteBuffer = ByteBuffer.allocate( dis.available() );
-            dis.readFully( byteBuffer.array() );
+            Buffer buffer = new Buffer( dis.available() );
+            dis.readFully( buffer.getPayload() );
+            while( true ) {
+                int opcode = buffer.getUbyte();
+                if( opcode == 0 )
+                    break;
+                if( opcode == 1 ) {
+                    int rPositionX = buffer.getUbyte();
+                    int rPositionY = buffer.getUbyte();
+                    Region region = regions[ rPositionX ][ rPositionY ] = new Region();
+                    region.load(buffer);
+                }
+            }
+            logger.log( Level.INFO , "Successfully loaded the region configuration" );
         } catch( Throwable t ) {
-            logger.log(Level.INFO, "Failed to load the region configuration...");
+            logger.log(Level.INFO, "Failed to load the region configuration");
         }
     }
 

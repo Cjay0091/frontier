@@ -8,6 +8,7 @@
 package com.evelus.frontier;
 
 import com.evelus.frontier.io.ArchiveManager;
+import com.evelus.frontier.game.regions.RegionHandler;
 
 /**
  * Evelus Development
@@ -24,6 +25,7 @@ public final class Launch {
         Server.getInstance().setId( Integer.parseInt(args[0]) );
         ArchiveManager.initialize( Constants.ARCHIVE_DATABASE_PATH );
         ArchiveManager.loadAll( );
+        RegionHandler.loadConfig( Constants.REGION_CONFIG_PATH );
         int state = -1;
         if( args[1].equals("live") ) {
             state = Server.LIVE_STATE;

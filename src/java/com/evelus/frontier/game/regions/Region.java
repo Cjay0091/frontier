@@ -9,7 +9,7 @@ package com.evelus.frontier.game.regions;
 
 import com.evelus.frontier.game.model.Entity;
 import com.evelus.frontier.game.model.Player;
-import java.nio.ByteBuffer;
+import com.evelus.frontier.io.Buffer;
 
 /**
  * Evelus Development
@@ -36,14 +36,24 @@ public final class Region {
     private int playerCount;
 
     /**
-     * Loads a data operation for this region.
+     * Loads the data for this region.
      *
-     * @param opcode    The opcode of the operation to preform.
-     * @param byteBuffer The bytebuffer to read the operation's data from.
+     * @param buffer The buffer to read the data from.
      */
-    public void load( int opcode, ByteBuffer byteBuffer )
+    public void load( Buffer buffer )
     {
-
+        while( true ) {
+            int opcode = buffer.getUbyte();
+            if( opcode == 0 )
+                break;
+            if( opcode == 1 ) {
+                int hash = buffer.getUbyte();
+                int sPositionX = hash >> 4;
+                if( sectors[ sPositionX ] == null )
+                    sectors[ sPositionX ] = new Sector[ 8 ];
+                sectors[ hash >> 4 ][ hash & 0xF ] = new Sector();
+            }
+        }
     }
 
     /**

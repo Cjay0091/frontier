@@ -173,8 +173,8 @@ public final class ItemSetup {
      */
     private static void writeStr( OutputStream os , String str ) throws IOException
     {
-        os.write(str.length());
         os.write(str.getBytes());
+        os.write(0);
     }
 
     static {

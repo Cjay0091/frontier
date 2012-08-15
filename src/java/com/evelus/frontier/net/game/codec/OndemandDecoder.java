@@ -8,7 +8,6 @@
 package com.evelus.frontier.net.game.codec;
 
 import com.evelus.frontier.net.game.IncomingFrame;
-import com.evelus.frontier.net.game.Session;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -26,11 +25,6 @@ public final class OndemandDecoder extends FrameDecoder {
      * The logger instance for this class.
      */
     private static final Logger logger = Logger.getLogger(OndemandDecoder.class.getSimpleName());
-
-    /**
-     * The instance of this class.
-     */
-    private static OndemandDecoder instance;
 
     /**
      * Constructs a new {@link OdDecoder};

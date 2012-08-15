@@ -29,8 +29,13 @@ public final class Constants {
     public static final int ENTITIES_IN_VIEW = 256;
 
     /**
-     * The archive data base.
+     * The path to the archive database.
      */
     public static final String ARCHIVE_DATABASE_PATH = "./bin/archives.db";
+
+    /**
+     * The path to the region configuration.
+     */
+    public static final String REGION_CONFIG_PATH = "./bin/regionconfig.dat";
 
 }

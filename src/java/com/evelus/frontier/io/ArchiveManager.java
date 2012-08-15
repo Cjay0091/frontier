@@ -28,12 +28,28 @@ public final class ArchiveManager {
     /**
      * The archives sources.
      */
-    private static byte[][][] archives;
+    private static Archive[][] archives;
 
     /**
      * The connection to the archives database.
      */
     private static Connection connection;
+
+    /**
+     * An archive.
+     */
+    private static class Archive {
+
+        /**
+         * The payload of the archive.
+         */
+        byte[] payload;
+
+        /**
+         * The checksum of the archive.
+         */
+        int checksum;
+    }
 
     /**
      * Initializes this archive manager.
@@ -45,10 +61,39 @@ public final class ArchiveManager {
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection( "jdbc:sqlite:" + filePath );
-            archives = new byte[ 256 ][ ][ ];
+            archives = new Archive[ 256 ][ ];
         } catch( Throwable t ) {
             logger.log( Level.INFO , "Failed to initialize the archive manager." );
         }
+    }
+
+    /**
+     * Loads an archive.
+     *
+     * @param indexId The index id of the archive to load.
+     * @param archiveId The id of the archive to load.
+     * @return If the archive was successfully loaded.
+     */
+    public static boolean load( int indexId , int archiveId ) throws Throwable
+    {
+        if( archives[ indexId ] != null && archives[ indexId ][ archiveId ] != null )
+            return true;
+        if( archives[ indexId ] == null ) {
+            initializeIndex( indexId );
+        }
+        Statement statement = connection.createStatement();
+        try {
+            ResultSet resultSet = statement.executeQuery("SELECT data , checksum FROM evelus_archives WHERE id = " + (indexId << 16 | archiveId));
+            if(resultSet.next()) {
+                Archive archive = archives[ indexId ][ archiveId ] = new Archive();
+                archive.payload = resultSet.getBytes( 1 );
+                archive.checksum = resultSet.getInt( 2 );
+            } else
+                return false;
+        } finally {
+            statement.close();
+        }
+        return true;
     }
 
     /**
@@ -60,7 +105,7 @@ public final class ArchiveManager {
             throw new IllegalStateException("not yet initialized");
         Statement statement = connection.createStatement();
         try {
-            ResultSet resultSet = statement.executeQuery("SELECT id , data FROM evelus_archives");
+            ResultSet resultSet = statement.executeQuery("SELECT id , data , checksum FROM evelus_archives");
             while( resultSet.next() ) {
                 int id = resultSet.getInt( 1 );
                 int indexId = id >> 16;
@@ -70,7 +115,9 @@ public final class ArchiveManager {
                 }
                 if( archives[ indexId ][ archiveId ] != null )
                     continue;
-                archives[ indexId ][ archiveId ] = resultSet.getBytes( 2 );
+                Archive archive = archives[ indexId ][ archiveId ] = new Archive();
+                archive.payload = resultSet.getBytes( 2 );
+                archive.checksum = resultSet.getInt( 3 );
             }
             logger.log( Level.INFO , "Successfully loaded all the archives into memory." );
         } finally {
@@ -89,7 +136,7 @@ public final class ArchiveManager {
     {
         if( indexId < 0 || indexId >= archives.length || archives[ indexId ] == null || archiveId < 0 || archiveId >= archives[ indexId ].length )
             return null;
-        return archives[ indexId ][ archiveId ];
+        return archives[ indexId ][ archiveId ].payload;
     }
 
     /**
@@ -103,7 +150,7 @@ public final class ArchiveManager {
         try {
             ResultSet resultSet = statement.executeQuery("SELECT MAX( id & 65535 ) FROM evelus_archives WHERE (id >> 16) = " + id);
             if( resultSet.next() ) {
-                archives[ id ] = new byte[ resultSet.getInt( 1 ) + 1 ][ ];
+                archives[ id ] = new Archive[ resultSet.getInt( 1 ) + 1 ];
             }
         } finally {
             statement.close();
