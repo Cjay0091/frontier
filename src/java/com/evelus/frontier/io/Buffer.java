@@ -24,6 +24,16 @@ public final class Buffer {
     }
 
     /**
+     * Constructs a new {@link Buffer};
+     *
+     * @param size The size of the buffer to create.
+     */
+    public Buffer( int size )
+    {
+        payload = new byte[ size ];
+    }
+
+    /**
      * The byte array payload that is utilized to decode/encode values.
      */
     private byte[] payload;
@@ -64,6 +74,16 @@ public final class Buffer {
     }
 
     /**
+     * Puts a byte into the payload.
+     *
+     * @param value The value of the byte to put.
+     */
+    public void putByte( int value )
+    {
+        payload[ offset++ ] = (byte) value;
+    }
+
+    /**
      * Gets an unsigned byte from the payload.
      *
      * @return The byte value.
@@ -95,6 +115,19 @@ public final class Buffer {
         return (payload[ offset - 3 ] & 0xFF) << 16 | 
                (payload[ offset - 2 ] & 0xFF) << 8  |
                (payload[ offset - 1] & 0xFF);
+    }
+
+    /**
+     * Puts a dword value into the payload.
+     *
+     * @param value The value to put.
+     */
+    public void putDword( int value )
+    {
+        payload[ offset++ ] = (byte) (value >> 24);
+        payload[ offset++ ] = (byte) (value >> 16);
+        payload[ offset++ ] = (byte) (value >> 8);
+        payload[ offset++ ] = (byte)  value;
     }
 
     /**

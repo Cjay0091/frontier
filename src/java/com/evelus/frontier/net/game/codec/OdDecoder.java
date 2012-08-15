@@ -56,10 +56,11 @@ public final class OdDecoder extends FrameDecoder {
                 return IncomingFrame.INVALID_FRAME;
             }
         }
-        if( channelBuffer.readableBytes() < 4 )
+        if( channelBuffer.readableBytes() < 3 )
             return null;
         IncomingFrame incomingFrame = new IncomingFrame( frameId , 3 );
         channelBuffer.readBytes( incomingFrame.getPayload() );
+        frameId = -1;
         return incomingFrame;
     }
 }

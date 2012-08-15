@@ -28,4 +28,9 @@ public final class Constants {
      */
     public static final int ENTITIES_IN_VIEW = 256;
 
+    /**
+     * The archive data base.
+     */
+    public static final String ARCHIVE_DATABASE_PATH = "./bin/archives.db";
+
 }

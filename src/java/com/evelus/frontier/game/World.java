@@ -79,7 +79,7 @@ public final class World implements Runnable {
                     player.updateLists();
                 }
                 long takenTime = System.currentTimeMillis() - startTime;
-                if(takenTime <= 600L) {
+                if(takenTime < 600L) {
                     Thread.sleep(600L - takenTime);
                 }
             }
