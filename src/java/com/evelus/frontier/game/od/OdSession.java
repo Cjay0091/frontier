@@ -137,7 +137,7 @@ public final class OdSession {
         int indexId = currentRequest >> 16;
         int archiveId = currentRequest & 0xFFFF;
         byte[] src = ArchiveManager.getArchive( indexId , archiveId );       
-        int writeAmount = 2048;
+        int writeAmount = 512;
         if( size == -1 ) {
             Buffer buffer = new Buffer(src);
             int compressionId = buffer.getUbyte();
@@ -163,7 +163,7 @@ public final class OdSession {
             writeAmount -= blockBytes;
             blockOffset += blockBytes;
             offset += blockBytes;
-            if( blockOffset == 512) {
+            if( blockOffset == 512 && offset != size ) {
                 channelBuffer.writeByte( 255 );
                 blockOffset = 1;
                 blockId++;
