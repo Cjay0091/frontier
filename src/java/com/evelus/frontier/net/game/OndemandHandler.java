@@ -7,8 +7,8 @@
 
 package com.evelus.frontier.net.game;
 
-import com.evelus.frontier.game.od.OdSession;
-import com.evelus.frontier.game.od.OdWorker;
+import com.evelus.frontier.game.ondemand.OndemandSession;
+import com.evelus.frontier.game.ondemand.OndemandWorker;
 import com.evelus.frontier.io.ArchiveManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,19 +17,19 @@ import java.util.logging.Logger;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class OdHandler implements SessionHandler {
+public final class OndemandHandler implements SessionHandler {
 
     /**
      * The logger instance for this class.
      */
-    private static final Logger logger = Logger.getLogger( OdHandler.class.getSimpleName() );
+    private static final Logger logger = Logger.getLogger( OndemandHandler.class.getSimpleName() );
 
     /**
      * Constructs a new {@link OdHandler};
      *
      * @param session The ondemand session for this handler.
      */
-    public OdHandler ( OdSession session )
+    public OndemandHandler ( OndemandSession session )
     {
         this.session = session;
     }
@@ -37,7 +37,7 @@ public final class OdHandler implements SessionHandler {
     /**
      * The ondemand session for this handler.
      */
-    private OdSession session;
+    private OndemandSession session;
 
     /**
      * Queues a new archive request to the session.
@@ -63,6 +63,6 @@ public final class OdHandler implements SessionHandler {
     @Override
     public void destroy( )
     {
-        OdWorker.getInstance().unregisterSession( session );
+        OndemandWorker.getInstance().unregisterSession( session );
     }
 }

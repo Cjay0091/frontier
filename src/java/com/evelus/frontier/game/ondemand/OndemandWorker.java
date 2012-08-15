@@ -5,7 +5,7 @@
  * Written by Hadyn Richard (sini@evel.us), July 2012
  */
 
-package com.evelus.frontier.game.od;
+package com.evelus.frontier.game.ondemand;
 
 import com.evelus.frontier.Constants;
 import com.evelus.frontier.util.LinkedArrayList;
@@ -16,30 +16,30 @@ import java.util.logging.Logger;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class OdWorker implements Runnable {
+public final class OndemandWorker implements Runnable {
 
     /**
      * The logger instance for this class.
      */
-    private static final Logger logger = Logger.getLogger( OdWorker.class.getSimpleName() );
+    private static final Logger logger = Logger.getLogger( OndemandWorker.class.getSimpleName() );
 
     /**
      * The instance of this class.
      */
-    private static OdWorker instance;
+    private static OndemandWorker instance;
 
     /**
      * Constructs a new {@link Odworker};
      */
-    private OdWorker ( )
+    private OndemandWorker ( )
     {
-        sessions = new LinkedArrayList<OdSession>( Constants.AMOUNT_PLAYERS );
+        sessions = new LinkedArrayList<OndemandSession>( Constants.AMOUNT_PLAYERS );
     }
 
     /**
      * The sessions for this ondemand worker.
      */
-    private LinkedArrayList<OdSession> sessions;
+    private LinkedArrayList<OndemandSession> sessions;
 
     /**
      * The thread for this worker.
@@ -57,7 +57,7 @@ public final class OdWorker implements Runnable {
      * @param session The session to register.
      * @return If the session was successfully registered.
      */
-    public boolean registerSession( OdSession session )
+    public boolean registerSession( OndemandSession session )
     {
         int id = sessions.addElement( session );
         if( id == -1 )
@@ -71,7 +71,7 @@ public final class OdWorker implements Runnable {
      *
      * @param session The session to unregister.
      */
-    public void unregisterSession( OdSession session )
+    public void unregisterSession( OndemandSession session )
     {
         sessions.removeElement( session.getId() );
     }
@@ -87,7 +87,7 @@ public final class OdWorker implements Runnable {
                 }
                 long startTime = System.currentTimeMillis();
                 if( sessions.getSize() > 0 ) {
-                     for( OdSession session : sessions ) {
+                     for( OndemandSession session : sessions ) {
                         session.update();
                      }
                 }
@@ -119,10 +119,10 @@ public final class OdWorker implements Runnable {
      *
      * @return The instance.
      */
-    public static OdWorker getInstance( )
+    public static OndemandWorker getInstance( )
     {
         if( instance == null )
-            instance = new OdWorker( );
+            instance = new OndemandWorker( );
         return instance;
     }
 }

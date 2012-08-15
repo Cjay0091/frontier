@@ -14,19 +14,19 @@ import java.util.logging.Logger;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class OdFrameDecoder implements FrameDecoder {
+public final class OndemandFrameDecoder implements FrameDecoder {
 
     /**
      * The logger instance for this class.
      */
-    private static final Logger logger = Logger.getLogger(OdFrameDecoder.class.getSimpleName());
+    private static final Logger logger = Logger.getLogger(OndemandFrameDecoder.class.getSimpleName());
 
     /**
      * Constructs a new {@link OdFrameDecoder};
      *
      * @param handler The handler for this frame decoder.
      */
-    public OdFrameDecoder( OdHandler handler )
+    public OndemandFrameDecoder( OndemandHandler handler )
     {
         this.handler = handler;
     }
@@ -34,7 +34,7 @@ public final class OdFrameDecoder implements FrameDecoder {
     /**
      * The ondemand handler for this frame decoder.
      */
-    private OdHandler handler;
+    private OndemandHandler handler;
 
     @Override
     public void decode( Session session , IncomingFrame incomingFrame )

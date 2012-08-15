@@ -5,7 +5,7 @@
  * Written by Hadyn Richard (sini@evel.us), July 2012
  */
 
-package com.evelus.frontier.game.od;
+package com.evelus.frontier.game.ondemand;
 
 import com.evelus.frontier.io.ArchiveManager;
 import com.evelus.frontier.io.Buffer;
@@ -19,12 +19,12 @@ import org.jboss.netty.buffer.ChannelBuffers;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class OdSession {
+public final class OndemandSession {
 
     /**
      * Constructs a new {@link OdSession};
      */
-    public OdSession ( Session session )
+    public OndemandSession ( Session session )
     {
         this.session = session;
         priorityRequests = new LinkedList<Integer>();
