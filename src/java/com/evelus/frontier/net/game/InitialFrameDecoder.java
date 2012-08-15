@@ -10,7 +10,7 @@ package com.evelus.frontier.net.game;
 import com.evelus.frontier.game.ondemand.OndemandSession;
 import com.evelus.frontier.game.ondemand.OndemandWorker;
 import com.evelus.frontier.io.Buffer;
-import com.evelus.frontier.net.game.codec.OdDecoder;
+import com.evelus.frontier.net.game.codec.OndemandDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -69,7 +69,7 @@ public class InitialFrameDecoder implements FrameDecoder {
             channelBuffer.writeByte(6);
             channel.write( channelBuffer ).addListener(ChannelFutureListener.CLOSE);
         } else {
-            channel.getPipeline().replace( "decoder" , "oddecoder" , new OdDecoder() );
+            channel.getPipeline().replace( "decoder" , "oddecoder" , new OndemandDecoder() );
             OndemandSession odSession = new OndemandSession( session );
             if( !OndemandWorker.getInstance().registerSession(odSession) ) {
                 ChannelBuffer channelBuffer = ChannelBuffers.buffer(1);
@@ -77,7 +77,7 @@ public class InitialFrameDecoder implements FrameDecoder {
                 channel.write( channelBuffer ).addListener(ChannelFutureListener.CLOSE);
                 return;
             }
-            session.setFrameDecoder( new OndemandFrameDecoder( new OndemandHandler( odSession )) );
+            session.setEventDecoder( new OndemandFrameDecoder( new OndemandHandler( odSession )) );
             ChannelBuffer channelBuffer = ChannelBuffers.buffer(1);
             channelBuffer.writeByte(0);
             channel.write( channelBuffer );

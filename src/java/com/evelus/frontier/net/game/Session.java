@@ -66,7 +66,7 @@ public final class Session {
      *
      * @param frameDecoder The frame decoder.
      */
-    public void setFrameDecoder( FrameDecoder frameDecoder )
+    public void setEventDecoder( FrameDecoder frameDecoder )
     {
         this.frameDecoder = frameDecoder;
     }

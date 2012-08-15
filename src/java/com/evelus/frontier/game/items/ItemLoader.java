@@ -7,6 +7,7 @@
 
 package com.evelus.frontier.game.items;
 
+import com.evelus.frontier.io.Buffer;
 import java.io.*;
 import java.util.logging.*;
 import java.nio.ByteBuffer;
@@ -40,16 +41,16 @@ public final class ItemLoader {
     public static void loadConfig( String filePath ) {
         try {
             DataInputStream dis = new DataInputStream( new FileInputStream(filePath) );
-            ByteBuffer byteBuffer = ByteBuffer.allocate( dis.available() );
-            dis.readFully( byteBuffer.array() );
-            int amountDefs = byteBuffer.getShort();
-            int maximumDef = byteBuffer.getShort();
+            Buffer byteBuffer = new Buffer( dis.available() );
+            dis.readFully( byteBuffer.getPayload() );
+            int amountDefs = byteBuffer.getUword();
+            int maximumDef = byteBuffer.getUword();
             definitions = new ItemDefinition[ maximumDef + 1 ];
             for( int i = 0 ; i < amountDefs ; i++ ) {
-                int id = byteBuffer.getShort();
+                int id = byteBuffer.getUword();
                 ItemDefinition definition = definitions[ id ] = new ItemDefinition( id );
                 while(true) {
-                    int opcode = byteBuffer.get() & 0xFF;
+                    int opcode = byteBuffer.getUbyte();
                     if( opcode == 0 )
                         break;
                     definition.load( opcode , byteBuffer );

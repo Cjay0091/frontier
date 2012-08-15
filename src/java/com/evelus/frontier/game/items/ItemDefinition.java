@@ -7,8 +7,7 @@
 
 package com.evelus.frontier.game.items;
 
-import com.evelus.frontier.util.ByteBufferUtils;
-import java.nio.ByteBuffer;
+import com.evelus.frontier.io.Buffer;
 
 /**
  * Evelus Development
@@ -53,9 +52,9 @@ public final class ItemDefinition {
      * @param opcode    The opcode of the operation to preform.
      * @param jagbuffer The jagbuffer to read the operation's data from.
      */
-    public void load( int opcode , ByteBuffer byteBuffer )
+    public void load( int opcode , Buffer byteBuffer )
     {
         if( opcode == 1 )
-            name = ByteBufferUtils.gstr(byteBuffer);
+            name = byteBuffer.getJstr();
     }
 }

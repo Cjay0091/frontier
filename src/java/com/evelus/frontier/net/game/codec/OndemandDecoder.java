@@ -20,22 +20,22 @@ import org.jboss.netty.handler.codec.frame.FrameDecoder;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class OdDecoder extends FrameDecoder {
+public final class OndemandDecoder extends FrameDecoder {
 
     /**
      * The logger instance for this class.
      */
-    private static final Logger logger = Logger.getLogger(OdDecoder.class.getSimpleName());
+    private static final Logger logger = Logger.getLogger(OndemandDecoder.class.getSimpleName());
 
     /**
      * The instance of this class.
      */
-    private static OdDecoder instance;
+    private static OndemandDecoder instance;
 
     /**
      * Constructs a new {@link OdDecoder};
      */
-    public OdDecoder ( )
+    public OndemandDecoder ( )
     {
         frameId = -1;
     }

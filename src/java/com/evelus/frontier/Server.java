@@ -126,8 +126,8 @@ public final class Server {
                     throw new IllegalStateException("server id is not set yet.");
                 }
                 sessions = new LinkedArrayList<Session>( 2048 );
-                OndemandWorker.getInstance().start();
                 bind( 40000 + serverId );
+                OndemandWorker.getInstance().start();
             }
             if( i == OFFLINE_STATE ) {
                 removeSessions( );
