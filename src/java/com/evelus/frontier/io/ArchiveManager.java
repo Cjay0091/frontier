@@ -9,10 +9,12 @@ package com.evelus.frontier.io;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.CRC32;
 
 /**
  * Evelus Development
@@ -34,6 +36,11 @@ public final class ArchiveManager {
      * The connection to the archives database.
      */
     private static Connection connection;
+    
+    /**
+     * The crc utility for this archive manager.
+     */
+    private static CRC32 crc;
 
     /**
      * An archive.
@@ -62,6 +69,7 @@ public final class ArchiveManager {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection( "jdbc:sqlite:" + filePath );
             archives = new Archive[ 256 ][ ];
+            crc = new CRC32();
         } catch( Throwable t ) {
             logger.log( Level.INFO , "Failed to initialize the archive manager." );
         }
@@ -128,15 +136,54 @@ public final class ArchiveManager {
     /**
      * Gets the source of an archive from this archive manager.
      *
-     * @param indexId The index of the archive.
+     * @param indexId The index id of the archive.
      * @param archiveId The id of the archive.
      * @return The source of the archive.
      */
-    public static byte[] getArchive( int indexId , int archiveId )
+    public static byte[] getPayload( int indexId , int archiveId )
     {
-        if( indexId < 0 || indexId >= archives.length || archives[ indexId ] == null || archiveId < 0 || archiveId >= archives[ indexId ].length )
+        if( indexId < 0 || indexId >= archives.length || archives[ indexId ] == null || archiveId < 0 || archiveId >= archives[ indexId ].length || archives[ indexId ][ archiveId ] == null )
             return null;
         return archives[ indexId ][ archiveId ].payload;
+    }
+
+    /**
+     * Gets the checksum of an archive from this archive manager.
+     *
+     * @param indexId The index id of the archive.
+     * @param archiveId The id of the archive.
+     * @return The source of the archive.
+     */
+    public static int getChecksum( int indexId , int archiveId )
+    {
+        if( indexId < 0 || indexId >= archives.length || archives[ indexId ] == null || archiveId < 0 || archiveId >= archives[ indexId ].length || archives[ indexId ][ archiveId ] == null )
+            return -1;
+        return archives[ indexId ][ archiveId ].checksum;
+    }
+    
+    /**
+     * Puts an archive into the database.
+     * 
+     * @param src The source of the archive to put.
+     * @param indexId The index id of the archive to put.
+     * @param archiveId The id of the archive to put.
+     */
+    public static void putArchive( byte[] src , int indexId , int archiveId ) throws Throwable
+    {
+        if( connection == null ) {
+            throw new IllegalStateException("not yet initialized");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement( "REPLACE INTO evelus_archives ( id , checksum , data ) VALUES ( ? , ? , ? )" );
+        try {
+            preparedStatement.setInt( 1 , archiveId | indexId << 16 );
+            crc.reset();
+            crc.update(src);
+            preparedStatement.setInt( 2 , (int) crc.getValue() );
+            preparedStatement.setBytes( 3 , src );
+            preparedStatement.execute();
+        } finally {
+            preparedStatement.close();
+        }
     }
 
     /**

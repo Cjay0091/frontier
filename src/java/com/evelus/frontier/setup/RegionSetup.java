@@ -35,7 +35,7 @@ public final class RegionSetup {
         if( !ArchiveManager.load( 255 , 5 ) )
             throw new IOException("failed to load table");
         FileOutputStream os = new FileOutputStream( Constants.REGION_CONFIG_PATH );
-        FileTable fileTable = new FileTable( CompressionUtils.decompressArchive( ArchiveManager.getArchive( 255 , 5 ) ) );
+        FileTable fileTable = new FileTable( CompressionUtils.decompressArchive( ArchiveManager.getPayload( 255 , 5 ) ) );
         for( int x = 0 ; x < (Position.MAXIMUM_X >> 6) ; x++ ) {
             for( int y = 0 ; y < (Position.MAXIMUM_Y >> 6) ; y++ ) {
                 Entry entry = fileTable.lookup("m" + x + "_" + y);
@@ -48,7 +48,7 @@ public final class RegionSetup {
                 os.write(1);
                 writeWord( os , x << 8 | y );
                 boolean[][] flags = new boolean[ 8 ][ 8 ];
-                getActiveSectors( flags , CompressionUtils.decompressArchive( ArchiveManager.getArchive( 5 , entry.getArchiveId() ) ) );
+                getActiveSectors( flags , CompressionUtils.decompressArchive( ArchiveManager.getPayload( 5 , entry.getArchiveId() ) ) );
                 for( int sectorX = 0 ; sectorX < 8 ; sectorX++ ) {
                     for( int sectorY = 0 ; sectorY < 8 ; sectorY++ ) {
                         if( !flags[ sectorX ][ sectorY ])

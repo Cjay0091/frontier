@@ -40,43 +40,29 @@ public final class Server {
     public final static int LIVE_STATE = 1;
 
     /**
-     * The instance of this class.
+     * The online development server state.
      */
-    private static Server instance;
-
-    /**
-     * Constructs a new {@link Server};
-     */
-    private Server ( )
-    {
-        state = OFFLINE_STATE;
-        serverId = -1;
-    }
+    public final static int DEV_STATE = 2;
 
     /**
      * The server bootstrap for this server.
      */
-    private ServerBootstrap serverBootstrap;
+    private static ServerBootstrap serverBootstrap;
 
     /**
      * The id of this server.
      */
-    private int serverId;
+    private static int serverId;
     
     /**
      * The sessions currently active for this server.
      */
-    private LinkedArrayList<Session> sessions;
+    private static LinkedArrayList<Session> sessions;
 
     /**
      * The current state of this server.
      */
-    private int state;
-
-    /**
-     * The thread for this server.
-     */
-    private Thread thread;
+    private static int state;
 
     /**
      * Registers a session to the server.
@@ -84,7 +70,7 @@ public final class Server {
      * @param session The session to register.
      * @return If the session was successfully registered.
      */
-    public boolean registerSession( Session session )
+    public static boolean registerSession( Session session )
     {
         int id = sessions.addElement( session );
         if( id == -1 )
@@ -98,7 +84,7 @@ public final class Server {
      *
      * @param session The session to unregister.
      */
-    public void unregisterSession( Session session )
+    public static void unregisterSession( Session session )
     {
         sessions.removeElement( session.getId() );
     }
@@ -108,7 +94,7 @@ public final class Server {
      *
      * @param i The id value.
      */
-    public void setId( int i )
+    public static void setId( int i )
     {
         serverId = i;
     }
@@ -118,10 +104,10 @@ public final class Server {
      *
      * @param i The state value.
      */
-    public void setState( int i )
+    public static void setState( int i )
     {
         if( i != state ) {
-            if( i == LIVE_STATE ) {
+            if( i == LIVE_STATE || i == DEV_STATE ) {
                 if(serverId == -1) {
                     throw new IllegalStateException("server id is not set yet.");
                 }
@@ -143,7 +129,7 @@ public final class Server {
      *
      * @return The state.
      */
-    public int getState( )
+    public static int getState( )
     {
         return state;
     }
@@ -153,7 +139,7 @@ public final class Server {
      *
      * @param port The port to bind the server to.
      */
-    private void bind( int port )
+    private static void bind( int port )
     {
         serverBootstrap = new ServerBootstrap( new NioServerSocketChannelFactory(
                                                       Executors.newCachedThreadPool(),
@@ -166,7 +152,7 @@ public final class Server {
     /**
      * Removes all the sessions for the server.
      */
-    private void removeSessions( )
+    private static void removeSessions( )
     {
         sessions = null;
     }
@@ -174,7 +160,7 @@ public final class Server {
     /**
      * Unbinds the server bootstrap.
      */
-    private void unbind( )
+    private static void unbind( )
     {
         serverBootstrap.releaseExternalResources();
         serverBootstrap = null;
@@ -194,20 +180,15 @@ public final class Server {
                 return "OFFLINE";
             case LIVE_STATE:
                 return "LIVE";
+            case DEV_STATE:
+                return "DEVELOPMENT";
             default:
                 return "UNKNOWN";
         }
     }
 
-    /**
-     * Gets the instance of this server.
-     *
-     * @return The instance.
-     */
-    public static Server getInstance( )
-    {
-        if( instance == null )
-            instance = new Server();
-        return instance;
+    static {
+        state = OFFLINE_STATE;
+        serverId = -1;
     }
 }

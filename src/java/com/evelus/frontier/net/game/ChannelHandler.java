@@ -41,11 +41,11 @@ public final class ChannelHandler extends SimpleChannelHandler {
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         Session session = new Session( ctx.getChannel() );
-        if( !Server.getInstance().registerSession( session ) ) {
+        if( !Server.registerSession( session ) ) {
             ctx.getChannel().close();
             return;
         }
-        session.setEventDecoder( InitialFrameDecoder.getInstance() );
+        session.setFrameDecoder( InitialFrameDecoder.getInstance() );
         logger.log(Level.INFO, "Connection accepted [address=" + ctx.getChannel().getRemoteAddress() + "]");
         ctx.getChannel().getPipeline().addFirst( "decoder" , new Decoder( session ) );
         ctx.setAttachment( session );
@@ -55,7 +55,7 @@ public final class ChannelHandler extends SimpleChannelHandler {
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         logger.log(Level.INFO, "Connection closed [address=" + ctx.getChannel().getRemoteAddress() + "]");
         Session session = (Session) ctx.getAttachment();
-        Server.getInstance().unregisterSession( session );
+        Server.unregisterSession( session );
     }
     
     @Override
@@ -73,6 +73,7 @@ public final class ChannelHandler extends SimpleChannelHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+        e.getCause().printStackTrace();
         Session session = (Session) ctx.getAttachment();
         session.destroy();
     }

@@ -22,15 +22,17 @@ public final class Launch {
      */
     public static void main( String[] args ) throws Throwable
     {
-        Server.getInstance().setId( Integer.parseInt(args[0]) );
-        ArchiveManager.initialize( Constants.ARCHIVE_DATABASE_PATH );
-        ArchiveManager.loadAll( );
-        RegionHandler.loadConfig( Constants.REGION_CONFIG_PATH );
+        Server.setId( Integer.parseInt(args[0]) );
         int state = -1;
         if( args[1].equals("live") ) {
             state = Server.LIVE_STATE;
+        } else if (args[1].equals("dev")) {
+            state = Server.DEV_STATE;
         } else
             throw new RuntimeException("launch mode '" + args[1] + "' not recognized.");
-        Server.getInstance().setState( state );
+        ArchiveManager.initialize( Constants.ARCHIVE_DATABASE_PATH );
+        ArchiveManager.loadAll( );
+        RegionHandler.loadConfig( Constants.REGION_CONFIG_PATH );
+        Server.setState( state );
     }
 }

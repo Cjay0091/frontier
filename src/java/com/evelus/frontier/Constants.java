@@ -38,4 +38,14 @@ public final class Constants {
      */
     public static final String REGION_CONFIG_PATH = "./bin/regionconfig.dat";
 
+    /**
+     * The option to have ISAAC active on the server.
+     */
+    public static final boolean ISAAC_ACTIVE = true;
+
+    /**
+     * The option to have RSA active on the server.
+     */
+    public static final boolean RSA_ACTIVE = false;
+
 }

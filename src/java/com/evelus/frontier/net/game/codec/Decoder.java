@@ -110,6 +110,8 @@ public final class Decoder extends FrameDecoder {
         FRAME_SIZES = new int[ 256 ];
         for( int i = 0 ; i < FRAME_SIZES.length ; i++ )
             FRAME_SIZES[ i ] = UNUSED;
-        FRAME_SIZES[ 15 ] = 4;                           // Ondemand connect
+        FRAME_SIZES[ 14 ] =  1;                           // Login server select
+        FRAME_SIZES[ 15 ] =  4;                           // Ondemand connect
+        FRAME_SIZES[ 16 ] = -1;
     }
 }

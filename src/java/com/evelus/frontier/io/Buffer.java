@@ -145,6 +145,24 @@ public final class Buffer {
     }
 
     /**
+     * Gets a qword value from the payload.
+     *
+     * @return The qword value.
+     */
+    public long getQword( )
+    {
+        offset += 8;
+        return (payload[offset - 8] & 0xFFL) << 56 |
+               (payload[offset - 7] & 0xFFL) << 48 |
+               (payload[offset - 6] & 0xFFL) << 40 |
+               (payload[offset - 5] & 0xFFL) << 32 |
+               (payload[offset - 4] & 0xFFL) << 24 |
+               (payload[offset - 3] & 0xFFL) << 16 |
+               (payload[offset - 2] & 0xFFL) << 8  |
+                payload[offset - 1] & 0xFF;
+    }
+
+    /**
      * Puts a jagex formatted string into the payload.
      *
      * @param str The string to encode into the payload.

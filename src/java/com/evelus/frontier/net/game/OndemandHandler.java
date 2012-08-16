@@ -48,7 +48,7 @@ public final class OndemandHandler implements SessionHandler {
      */
     public void queueRequest( int indexId , int archiveId , boolean isPriority )
     {
-        if( ArchiveManager.getArchive( indexId , archiveId ) == null ) {
+        if( ArchiveManager.getPayload( indexId , archiveId ) == null ) {
             logger.log( Level.INFO , "Rejected archive request [indexid=" + indexId + ", archiveid=" + archiveId + "]" );
             return;
         }

@@ -140,7 +140,7 @@ public final class OdSetup {
             preparedStatement.setBytes( 3 , src );
             preparedStatement.execute();
         } finally {
-            statement.close();
+            preparedStatement.close();
         }
     }
 }

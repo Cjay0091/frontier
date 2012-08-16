@@ -129,25 +129,28 @@ public final class OndemandSession {
             } else if( !regularRequests.isEmpty() ) {
                 currentRequest = regularRequests.poll();
             }
-            if( currentRequest == -1)
+            if( currentRequest == -1) {
                 return;
+            }
             offset = 0;
             blockId = 0;
         }
         int indexId = currentRequest >> 16;
         int archiveId = currentRequest & 0xFFFF;
-        byte[] src = ArchiveManager.getArchive( indexId , archiveId );       
+        byte[] src = ArchiveManager.getPayload( indexId , archiveId );
         int writeAmount = 512;
         if( size == -1 ) {
             Buffer buffer = new Buffer(src);
             int compressionId = buffer.getUbyte();
             size = buffer.getDword() + (compressionId == 0 ? 5 : 9);
         }
-        if( offset + writeAmount > size )
+        if( offset + writeAmount > size ) {
             writeAmount = size - offset;
+        }
         int bufferSize = writeAmount;
-        if( offset == 0 )
+        if( offset == 0 ) {
             bufferSize += 8;
+        }
         bufferSize += bufferSize / 512 + 1;
         ChannelBuffer channelBuffer = ChannelBuffers.buffer( bufferSize );
         if( offset == 0 ) {         
@@ -157,8 +160,9 @@ public final class OndemandSession {
         }
         for( ; writeAmount > 0 ; ) {
             int blockBytes = 512 - blockOffset;
-            if( blockBytes > writeAmount )
+            if( blockBytes > writeAmount ) {
                 blockBytes = writeAmount;
+            }
             channelBuffer.writeBytes( src , offset , blockBytes );
             writeAmount -= blockBytes;
             blockOffset += blockBytes;
