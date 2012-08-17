@@ -73,7 +73,6 @@ public final class ChannelHandler extends SimpleChannelHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-        e.getCause().printStackTrace();
         Session session = (Session) ctx.getAttachment();
         session.destroy();
     }

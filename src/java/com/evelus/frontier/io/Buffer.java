@@ -124,6 +124,21 @@ public final class Buffer {
         payload[ offset++ ] = (byte) (value >> 8);
         payload[ offset++ ] = (byte) value;
     }
+    
+    /**
+     * Gets a word from the payload.
+     * 
+     * @return The word value.
+     */
+    public int getWord( )
+    {
+        offset += 2;
+        int value = (payload[ offset - 2 ] & 0xFF) << 8 | (payload[ offset - 1] & 0xFF);
+        if( value > 32767 ) {
+            value -= 65536;
+        }
+        return value;
+    }
 
     /**
      * Gets an unsigned word from the payload.

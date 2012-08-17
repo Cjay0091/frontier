@@ -28,8 +28,9 @@ public final class Launch {
             state = Server.LIVE_STATE;
         } else if (args[1].equals("dev")) {
             state = Server.DEV_STATE;
-        } else
+        } else {
             throw new RuntimeException("launch mode '" + args[1] + "' not recognized.");
+        }
         ArchiveManager.initialize( Constants.ARCHIVE_DATABASE_PATH );
         ArchiveManager.loadAll( );
         RegionHandler.loadConfig( Constants.REGION_CONFIG_PATH );

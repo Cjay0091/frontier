@@ -54,7 +54,8 @@ public final class ItemDefinition {
      */
     public void load( int opcode , Buffer byteBuffer )
     {
-        if( opcode == 1 )
+        if( opcode == 1 ) {
             name = byteBuffer.getJstr();
+        }
     }
 }

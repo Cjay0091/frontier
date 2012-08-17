@@ -90,7 +90,7 @@ public abstract class MobUpdateFrame extends OutgoingFrame {
                             buffer.putBits( type , 2 );
                             if( type == 1 || type == 2) {
                                 if( type == 1 ) {
-                                    buffer.putBits( movementHash >> 2 & 0x7 , 3 );
+                                    buffer.putBits( movementHash >> 2 , 3 );
                                 } else {
                                     buffer.putBits( movementHash >> 2 & 0x7 , 3 );
                                     buffer.putBits( movementHash >> 5 , 3 );
