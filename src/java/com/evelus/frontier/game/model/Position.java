@@ -159,4 +159,24 @@ public final class Position {
     {
         return positionY >> 6;
     }
+    
+    /**
+     * Gets the map position x coordinate.
+     * 
+     * @return The map x.
+     */
+    public int getMapPositionX( )
+    {
+        return positionX - ( getSectorX() - 6 << 3 );
+    }
+    
+     /**
+     * Gets the map position y coordinate.
+     * 
+     * @return The map y.
+     */
+    public int getMapPositionY( )
+    {
+        return positionY - ( getSectorY() - 6 << 3 );
+    }
 }

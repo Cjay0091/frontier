@@ -80,7 +80,7 @@ public final class Decoder extends FrameDecoder {
             }
             frameId &= 0xFF;
             frameSize = FRAME_SIZES[ frameId ];
-            if( frameSize == UNUSED) {
+            if( frameSize == UNUSED ) {
                 buffer.readerIndex( buffer.capacity() );
                 logger.log(Level.INFO, "Unused frame sent from client [id=" + frameId + "]");
                 return IncomingFrame.INVALID_FRAME;
@@ -91,15 +91,18 @@ public final class Decoder extends FrameDecoder {
             if( frameSize == WORD_SIZE ) {
                 required = 2;
             }
-            if( buffer.readableBytes() < required )
+            if( buffer.readableBytes() < required ) {
                 return null;
-            if( frameSize == BYTE_SIZE )
+            }
+            if( frameSize == BYTE_SIZE ) {
                 frameSize = buffer.readByte() & 0xFF;
-            else if( frameSize == WORD_SIZE )
+            } else if( frameSize == WORD_SIZE ) {
                 frameSize = buffer.readShort() & 0xFFFF;
+            }
         }
-        if( buffer.readableBytes() < frameSize )
+        if( buffer.readableBytes() < frameSize ) {
             return null;
+        }
         IncomingFrame frame = new IncomingFrame( frameId , frameSize );
         buffer.readBytes( frame.getPayload() );
         frameId = -1;
@@ -110,8 +113,11 @@ public final class Decoder extends FrameDecoder {
         FRAME_SIZES = new int[ 256 ];
         for( int i = 0 ; i < FRAME_SIZES.length ; i++ )
             FRAME_SIZES[ i ] = UNUSED;
-        FRAME_SIZES[ 14 ] =  1;                           // Login server select
-        FRAME_SIZES[ 15 ] =  4;                           // Ondemand connect
-        FRAME_SIZES[ 16 ] = -1;
+        FRAME_SIZES[  14 ] =  1;                           // Login server select
+        FRAME_SIZES[  15 ] =  4;                           // Ondemand connect
+        FRAME_SIZES[  16 ] = -1;                           // Login request
+        FRAME_SIZES[  21 ] =  0;                           // Dunno
+        FRAME_SIZES[  86 ] =  0;                           // Dunno
+        FRAME_SIZES[ 141 ] =  4;                           // Dunno
     }
 }

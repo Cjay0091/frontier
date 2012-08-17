@@ -94,6 +94,27 @@ public final class Buffer {
     }
 
     /**
+     * Puts a byte plus 128 into the payload.
+     * 
+     * @param value The value of the byte to put.
+     */
+    public void putByte128( int value )
+    {
+        payload[ offset++ ] = (byte) (value + 128);
+    }
+    
+    /**
+     * Puts a word into the payload.
+     *
+     * @param value The value of the word to put.
+     */
+    public void putWord( int value )
+    {
+        payload[ offset++ ] = (byte) (value >> 8);
+        payload[ offset++ ] = (byte) value;
+    }
+
+    /**
      * Gets an unsigned word from the payload.
      *
      * @return The word value.
@@ -102,6 +123,39 @@ public final class Buffer {
     {
         offset += 2;
         return (payload[ offset - 2 ] & 0xFF) << 8 | (payload[ offset - 1] & 0xFF);
+    }
+    
+    /**
+     * Puts a word plus 128 into the payload.
+     *
+     * @param value The value of the word to put.
+     */
+    public void putWord128( int value )
+    {
+        payload[ offset++ ] = (byte) (value >> 8);
+        payload[ offset++ ] = (byte) (value + 128);
+    }
+    
+    /**
+     * Puts a little endian word into the payload.
+     * 
+     * @param value The world value to put.
+     */
+    public void putWordLe( int value )
+    {
+        payload[ offset++ ] = (byte) value;
+        payload[ offset++ ] = (byte) ( value >> 8 );
+    }
+    
+    /**
+     * Puts a little endian word plus 128 into the payload.
+     * 
+     * @param value The world value to put.
+     */
+    public void putWordLe128( int value )
+    {
+        payload[ offset++ ] = (byte) ( value + 128 );
+        payload[ offset++ ] = (byte) ( value >> 8 );
     }
 
     /**

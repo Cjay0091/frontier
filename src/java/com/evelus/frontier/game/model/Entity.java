@@ -117,6 +117,16 @@ public class Entity {
     {
         return position;
     }
+    
+    /**
+     * Sets the id of this entity.
+     * 
+     * @param id The id value.
+     */
+    public void setId( int id )
+    {
+        this.id = id;
+    }
 
     /**
      * Gets the id of this entity.

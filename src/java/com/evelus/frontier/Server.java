@@ -181,7 +181,7 @@ public final class Server {
             case LIVE_STATE:
                 return "LIVE";
             case DEV_STATE:
-                return "DEVELOPMENT";
+                return "DEV";
             default:
                 return "UNKNOWN";
         }

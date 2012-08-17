@@ -9,12 +9,15 @@ package com.evelus.frontier.net.game;
 
 import com.evelus.frontier.Constants;
 import com.evelus.frontier.Server;
+import com.evelus.frontier.game.World;
+import com.evelus.frontier.game.model.Player;
 import com.evelus.frontier.game.ondemand.OndemandSession;
 import com.evelus.frontier.game.ondemand.OndemandWorker;
 import com.evelus.frontier.io.ArchiveManager;
 import com.evelus.frontier.io.Buffer;
+import com.evelus.frontier.net.game.codec.FrameEncoder;
 import com.evelus.frontier.net.game.codec.OndemandDecoder;
-import java.io.IOException;
+import com.evelus.frontier.net.game.frames.RebuildMapFrame;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -89,25 +92,27 @@ public class InitialFrameDecoder implements FrameDecoder {
      */
     private static void handleOdConnect( Session session , Buffer buffer )
     {
-        Channel channel = session.getChannel();
-        int revision = buffer.getDword();
+        Channel channel = session.getChannel( );
+        int revision = buffer.getDword( );
         if( revision != 443 ) {
             logger.log(Level.INFO, "Unexpected client revision sent on od connect [revision=" + revision + "]");
-            ChannelBuffer channelBuffer = ChannelBuffers.buffer(1);
-            channelBuffer.writeByte(6);
-            channel.write( channelBuffer ).addListener(ChannelFutureListener.CLOSE);
+            ChannelBuffer channelBuffer = ChannelBuffers.buffer( 1 );
+            channelBuffer.writeByte( 6 );
+            channel.write( channelBuffer ).addListener( ChannelFutureListener.CLOSE );
         } else {
-            channel.getPipeline().replace( "decoder" , "oddecoder" , new OndemandDecoder() );
+            channel.getPipeline().replace( "decoder" , "oddecoder" , new OndemandDecoder( ) );
             OndemandSession odSession = new OndemandSession( session );
-            if( !OndemandWorker.getInstance().registerSession(odSession) ) {
-                ChannelBuffer channelBuffer = ChannelBuffers.buffer(1);
-                channelBuffer.writeByte(7);
-                channel.write( channelBuffer ).addListener(ChannelFutureListener.CLOSE);
+            if( !OndemandWorker.getInstance().registerSession( odSession ) ) {
+                ChannelBuffer channelBuffer = ChannelBuffers.buffer( 1 );
+                channelBuffer.writeByte( 7 );
+                channel.write( channelBuffer ).addListener( ChannelFutureListener.CLOSE );
                 return;
             }
-            session.setFrameDecoder( new OndemandFrameDecoder( new OndemandHandler( odSession )) );
-            ChannelBuffer channelBuffer = ChannelBuffers.buffer(1);
-            channelBuffer.writeByte(0);
+            OndemandHandler handler = new OndemandHandler( odSession );
+            session.setHandler( handler );
+            session.setFrameDecoder( new OndemandFrameDecoder( handler ) );
+            ChannelBuffer channelBuffer = ChannelBuffers.buffer( 1 );
+            channelBuffer.writeByte( 0 );
             channel.write( channelBuffer );
         }
     }
@@ -125,7 +130,7 @@ public class InitialFrameDecoder implements FrameDecoder {
         if( revision != 443 ) {
             logger.log(Level.INFO, "Unexpected client revision sent on login [revision=" + revision + "]");
             ChannelBuffer channelBuffer = ChannelBuffers.buffer(1);
-            channelBuffer.writeByte(5);
+            channelBuffer.writeByte(6);
             channel.write( channelBuffer ).addListener(ChannelFutureListener.CLOSE);
         } else {
             buffer.getUbyte();
@@ -150,11 +155,28 @@ public class InitialFrameDecoder implements FrameDecoder {
                 throw new RuntimeException("invalid rsa check");
             }
             int[] seeds = new int[ 4 ];
-            for( int i = 0 ; i < 4 ; i++ )
+            for( int i = 0 ; i < 4 ; i++ ) {
                 seeds[ i ] = buffer.getDword();
+            }
             buffer.getDword();
             buffer.getQword();
             buffer.getJstr();
+            Player player = new Player( session );
+            if( !World.getInstance().registerPlayer( player ) ) {
+                ChannelBuffer channelBuffer = ChannelBuffers.buffer( 1 );
+                channelBuffer.writeByte( 7 );
+                session.getChannel().write( channelBuffer ).addListener( ChannelFutureListener.CLOSE );
+                return;
+            }      
+            session.initIncomingIsaac( seeds );
+            for( int i = 0 ; i < 4 ; i++) {
+                seeds[ i ] += 50;
+            }
+            session.initOutgoingIsaac( seeds );
+            GameSessionHandler handler = new GameSessionHandler( player );
+            session.setHandler( handler );
+            session.setFrameDecoder( new GameFrameDecoder( handler ) );
+            handler.sendLogin( );
         }
     }
 

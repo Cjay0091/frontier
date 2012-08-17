@@ -59,6 +59,22 @@ public final class World implements Runnable {
     {
         players = new LinkedArrayList<Player>( Constants.AMOUNT_PLAYERS );
     }
+    
+    /**
+     * Registers a player to this world.
+     * 
+     * @param player The player to register to this world.
+     * @return If the player was successfully registered.
+     */
+    public boolean registerPlayer( Player player )
+    {
+        int id = players.addElement( player );
+        if( id == -1 ) {
+            return false;
+        }
+        player.setId( id );
+        return true;
+    }
 
     @Override
     public void run( )

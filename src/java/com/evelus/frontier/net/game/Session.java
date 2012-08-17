@@ -45,6 +45,11 @@ public final class Session {
      * The incoming isaac cipher for this session.
      */
     private ISAACCipher incomingIsaac;
+    
+    /**
+     * The outgoing isaac cipher for this session.
+     */
+    private ISAACCipher outgoingIsaac;
 
     /**
      * The id of this session.
@@ -110,6 +115,17 @@ public final class Session {
     {
         return id;
     }
+    
+        
+    /**
+     * Initializes the incoming ISAAC.
+     * 
+     * @param seeds The seeds for the ISAAC.
+     */
+    public void initIncomingIsaac( int[] seeds )
+    {
+        incomingIsaac = new ISAACCipher( seeds );
+    }
 
     /**
      * Gets the incoming ISAAC.
@@ -119,6 +135,26 @@ public final class Session {
     public ISAACCipher getIncomingIsaac( )
     {
         return incomingIsaac;
+    }
+    
+    /**
+     * Initializes the outgoing ISAAC.
+     * 
+     * @param seeds The seeds for the ISAAC.
+     */
+    public void initOutgoingIsaac( int[] seeds )
+    {
+        outgoingIsaac = new ISAACCipher( seeds );
+    }
+    
+    /**
+     * Gets the outgoing ISAAC.
+     * 
+     * @return The outgoing ISAAC.
+     */
+    public ISAACCipher getOutgoingIsaac( )
+    {
+        return outgoingIsaac;
     }
 
     /**

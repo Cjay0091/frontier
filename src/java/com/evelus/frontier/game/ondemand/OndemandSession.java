@@ -149,7 +149,7 @@ public final class OndemandSession {
         }
         int bufferSize = writeAmount;
         if( offset == 0 ) {
-            bufferSize += 8;
+            bufferSize += 3;
         }
         bufferSize += bufferSize / 512 + 1;
         ChannelBuffer channelBuffer = ChannelBuffers.buffer( bufferSize );

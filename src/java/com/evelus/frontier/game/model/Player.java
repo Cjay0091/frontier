@@ -10,6 +10,8 @@ package com.evelus.frontier.game.model;
 import com.evelus.frontier.Constants;
 import com.evelus.frontier.game.model.mob.PlayerUpdateBlock;
 import com.evelus.frontier.game.update.SceneList;
+import com.evelus.frontier.net.game.Session;
+import com.evelus.frontier.net.game.frames.RebuildMapFrame;
 
 /**
  * Evelus Development
@@ -20,12 +22,18 @@ public class Player extends Mob {
     /**
      * Constructs a new {@link Player};
      */
-    public Player ()
+    public Player ( Session session )
     {
         updatedSectorX = -1;
         updatedSectorY = -1;
+        this.session = session;
         initialize( );
     }
+    
+    /**
+     * The session for this player.
+     */
+    private Session session;
 
     /**
      * The update block for this player.
@@ -64,10 +72,7 @@ public class Player extends Mob {
             int sectorY = position.getSectorY();
             if(sectorX > updatedSectorX + 4 || sectorX <= updatedSectorX - 4 ||
                sectorY > updatedSectorY + 4 || sectorY <= updatedSectorY - 4) {
-                updatedSectorX = position.getSectorX();
-                updatedSectorY = position.getSectorY();
-                setMovementHash(1 << 2 | 3);
-                return;
+                rebuildMap( );
             }
         } else {
             updatedSectorX = position.getSectorX();
@@ -82,6 +87,21 @@ public class Player extends Mob {
         setUpdateHash( updateBlock.getFlags() );
         updateBlock.reset();
     }
+    
+    /**
+     * Calls for a map rebuild.
+     */
+    public void rebuildMap( )
+    {
+        Position position = getPosition( );
+        updatedSectorX = position.getSectorX();
+        updatedSectorY = position.getSectorY();
+        session.getChannel().write( new RebuildMapFrame (   position.getSectorX(),
+                                                            position.getSectorY(), 
+                                                            position.getMapPositionX(), 
+                                                            position.getMapPositionY() 
+                                                        ));
+    }
 
     /**
      * Updates all the lists for this player.
@@ -90,5 +110,15 @@ public class Player extends Mob {
     {
         Position position = getPosition( );
         playerSceneList.update( position.getPositionX() , position.getPositionY() , position.getHeight() );
+    }
+    
+    /**
+     * Gets the session for this player.
+     * 
+     * @return The session.
+     */
+    public Session getSession( )
+    {
+        return session;
     }
 }
