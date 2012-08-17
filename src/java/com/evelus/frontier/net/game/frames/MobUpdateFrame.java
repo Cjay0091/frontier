@@ -70,7 +70,6 @@ public abstract class MobUpdateFrame extends OutgoingFrame {
     {
         buffer.putBits( activeMobs , 8 );
         if( activeMobs > 0 ) {
-            System.out.println( "UPDATING" );
             LinkedArrayList<Node> activeNodes = sceneList.getActiveNodes();
             for( Node node : activeNodes ) {
                 if( node.getState() == SceneList.NEWLY_ADDED ) {
@@ -122,7 +121,6 @@ public abstract class MobUpdateFrame extends OutgoingFrame {
     {
         LinkedArrayList<Node> activeNodes = sceneList.getActiveNodes();
         if( activeNodes.getSize() > 0 ) {
-            System.out.println( "ADDING" );
             for( Node node : activeNodes ) {
                 if( node.getState() != SceneList.NEWLY_ADDED ) {
                     continue;
