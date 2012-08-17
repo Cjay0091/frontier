@@ -12,6 +12,11 @@ package com.evelus.frontier.io;
  * Created by Hadyn Richard
  */
 public final class Buffer {
+    
+    /**
+     * The mask array.
+     */
+    private final static int[] MASKS;
 
     /**
      * Constructs a new {@link Jagbuffer};
@@ -31,6 +36,7 @@ public final class Buffer {
     public Buffer( int size )
     {
         payload = new byte[ size ];
+        bitOffset = -1;
     }
 
     /**
@@ -42,6 +48,11 @@ public final class Buffer {
      * The offset pointer of the payload.
      */
     private int offset;
+    
+    /**
+     * The current bit offset in the payload.
+     */
+    private int bitOffset;
 
     /**
      * Gets the payload for this jagbuffer.
@@ -240,4 +251,64 @@ public final class Buffer {
         while( payload[ offset++ ] != 0 );
         return new String( payload , start , offset - start - 1 );
     }
+    
+    /**
+     * Gets if bit access is active for this buffer.
+     * 
+     * @return If bit access is active.
+     */
+    public boolean isBitAccessActive( )
+    {
+        return bitOffset != -1;
+    }
+    
+    /**
+     * Initializes the bit offset.
+     */
+    public void initializeBitOffset( ) 
+    {
+        bitOffset = offset * 8;
+    }
+    
+    /**
+     * Sets the current offset of the byte buffer from the bit offset.
+     */
+    public void resetBitOffset( ) 
+    {
+        offset = (bitOffset + 7) / 8;
+        bitOffset = -1;
+    }
+    
+    /**
+     * Puts a value into the payload array.
+     *
+     * @param value The value to putBits into the payload array.
+     * @param amountBits The amount of bits to write the value as.
+     */
+    public void putBits( int value , int amountBits ) 
+    {
+        int byteOffset = bitOffset >> 3;
+        int off = 8 - (bitOffset & 7);
+        bitOffset += amountBits;
+        for (; amountBits > off; off = 8) {
+            payload[byteOffset] &= ~MASKS[off];
+            payload[byteOffset] |= value >> (amountBits - off) & MASKS[off];            
+            amountBits -= off;
+            byteOffset++;
+        }
+        if (amountBits == off) {
+            payload[byteOffset] &= ~MASKS[off];
+            payload[byteOffset] |= value & MASKS[off];
+        } else {
+            payload[byteOffset] &= ~MASKS[amountBits] << (off - amountBits);
+            payload[byteOffset] |= (value & MASKS[amountBits]) << (off - amountBits);            
+        }
+    }
+    
+     static {
+        MASKS = new int[32];
+        for (int i = 0; i < 32; i++) {
+            MASKS[i] = (1 << i) - 1;
+        }
+    } 
 }

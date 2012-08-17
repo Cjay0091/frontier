@@ -28,8 +28,10 @@ public class Entity {
     public Entity ( )
     {
         position = new Position(DEFAULT_X, DEFAULT_Y);
-        sectorHash = -1;
         regionHash = -1;
+        sectorHash = -1;
+        lastRegionHash = -1;
+        lastSectorHash = -1;
     }
 
     /**
@@ -72,40 +74,42 @@ public class Entity {
      */
     public void updateLocation( )
     {
-       int regionX = position.getRegionX();
-       int regionY = position.getRegionY();
-       int rHash = regionX << 8 | regionY;
-       boolean updateRegion = false;
-       if( regionHash == -1 || rHash != regionHash ) {
-           lastRegionHash = regionHash;
-           regionHash = rHash;
-           updateRegion = true;
-       }
-       int sectorX = position.getSectorX() - ( regionX << 3 );
-       int sectorY = position.getSectorY() - ( regionY << 3 );
-       int sHash = sectorX << 8 | sectorY;
-       boolean updateSector = false;
-       if( sectorHash == -1 || sHash != sectorHash ) {
-           lastSectorHash = sectorHash;
-           sectorHash = sHash;
-           updateSector = true;
-       }
-       if( updateSector || updateRegion ) {
-           Region region;
-           if( lastRegionHash != -1 || lastSectorHash != -1) {
-               region = RegionHandler.getRegion( lastRegionHash >> 8 , lastRegionHash & 0xFF );
-               int sPositionX = lastSectorHash >> 8;
-               int sPositionY = lastSectorHash & 0xFF;
-               if( lastRegionHash != -1 ) {
-                   region.removeEntity( this, sPositionX , sPositionY );
-               } else {
-                   Sector sector = region.getSector( sPositionX , sPositionY );
-                   sector.removeEntity( this );
-               }
-           }
-           region = RegionHandler.getRegion( regionX , regionY );
-           region.addEntity( this, sectorX , sectorY );
-       }
+        int regionX = position.getRegionX();
+        int regionY = position.getRegionY();
+        int rHash = regionX << 8 | regionY;
+        boolean updateRegion = false;
+        if( regionHash == -1 || rHash != regionHash ) {
+            regionHash = rHash;
+            updateRegion = true;
+        }
+        int sectorX = position.getSectorX() - ( regionX << 3 );
+        int sectorY = position.getSectorY() - ( regionY << 3 );
+        int sHash = sectorX << 8 | sectorY;
+        boolean updateSector = false;
+        if( sectorHash == -1 || sHash != sectorHash ) {
+             if( sectorHash != -1 ) {
+                 lastRegionHash = regionHash;
+                 lastSectorHash = sectorHash;
+             }
+             sectorHash = sHash;
+             updateSector = true;
+        }
+        if( updateSector || updateRegion ) {
+            Region region;
+            if( lastRegionHash != -1 || lastSectorHash != -1) {
+                region = RegionHandler.getRegion( lastRegionHash >> 8 , lastRegionHash & 0xFF );
+                int sPositionX = lastSectorHash >> 8;
+                int sPositionY = lastSectorHash & 0xFF;
+                if( lastRegionHash != -1 ) {
+                    region.removeEntity( this, sPositionX , sPositionY );
+                } else {
+                    Sector sector = region.getSector( sPositionX , sPositionY );
+                    sector.removeEntity( this );
+                }
+            }
+            region = RegionHandler.getRegion( regionX , regionY );
+            region.addEntity( this, sectorX , sectorY );
+        }
     }
 
     /**

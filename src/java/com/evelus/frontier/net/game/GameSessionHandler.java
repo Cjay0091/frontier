@@ -7,6 +7,7 @@
 
 package com.evelus.frontier.net.game;
 
+import com.evelus.frontier.game.World;
 import com.evelus.frontier.game.model.Player;
 import com.evelus.frontier.net.game.codec.FrameEncoder;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -54,6 +55,6 @@ public class GameSessionHandler implements SessionHandler {
     @Override
     public void destroy( ) 
     {
-        
+        World.getInstance().unregisterPlayer( player );
     }
 }

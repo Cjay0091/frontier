@@ -7,6 +7,7 @@
 
 package com.evelus.frontier;
 
+import com.evelus.frontier.game.World;
 import com.evelus.frontier.game.ondemand.OndemandWorker;
 import com.evelus.frontier.net.game.Session;
 import com.evelus.frontier.net.game.PipelineFactory;
@@ -111,8 +112,9 @@ public final class Server {
                 if(serverId == -1) {
                     throw new IllegalStateException("server id is not set yet.");
                 }
-                sessions = new LinkedArrayList<Session>( 2048 );
+                sessions = new LinkedArrayList<Session>( 4096 );
                 bind( 40000 + serverId );
+                World.getInstance().start();
                 OndemandWorker.getInstance().start();
             }
             if( i == OFFLINE_STATE ) {

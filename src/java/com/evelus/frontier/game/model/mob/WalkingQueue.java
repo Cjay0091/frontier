@@ -16,7 +16,7 @@ public final class WalkingQueue {
     /**
      * The directions for the delta x and y values.
      */
-    private static final int[][] DIRECTIONS = new int[0][0];
+    private static final int[][] DIRECTIONS = new int[ 3 ][ 3 ];
 
     /**
      * Constructs a new {@link WalkingQueue};
@@ -53,8 +53,9 @@ public final class WalkingQueue {
      */
     private void initialize( )
     {
-        for( int i = 0 ; i < maximumSize ; i++ )
+        for( int i = 0 ; i < maximumSize ; i++ ) {
             steps[ i ] = new Step( );
+        }
     }
 
     /**
@@ -66,8 +67,9 @@ public final class WalkingQueue {
      */
     public boolean queue( int deltaX , int deltaY )
     {
-        if( deltaX < -1 || deltaX > 1 || deltaY < -1 || deltaY > 1)
+        if( deltaX < -1 || deltaX > 1 || deltaY < -1 || deltaY > 1) {
             throw new RuntimeException();
+        }
         if(size < maximumSize) {
             Step step = steps[ size++ ];
             step.deltaX = deltaX;
@@ -85,10 +87,11 @@ public final class WalkingQueue {
     public Step poll( )
     {
         Step step = null;
-        if(offset >= maximumSize)
+        if( offset >= size ) {
             reset();
-        else
+        } else if( size > 0 ) {
             step = steps[ offset++ ];
+        }
         return step;
     }
 
@@ -157,6 +160,13 @@ public final class WalkingQueue {
     }
 
     static {
-        //TODO DIRECTIONS
+        DIRECTIONS[ 0 ][ 2 ] = 0;
+        DIRECTIONS[ 1 ][ 2 ] = 1;
+        DIRECTIONS[ 2 ][ 2 ] = 2;
+        DIRECTIONS[ 0 ][ 1 ] = 3;
+        DIRECTIONS[ 2 ][ 1 ] = 4;
+        DIRECTIONS[ 0 ][ 0 ] = 5;
+        DIRECTIONS[ 1 ][ 0 ] = 6;
+        DIRECTIONS[ 2 ][ 0 ] = 7;
     }
 }

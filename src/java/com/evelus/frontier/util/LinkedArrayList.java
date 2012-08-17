@@ -192,8 +192,9 @@ public final class LinkedArrayList<T> implements Iterable<T> {
     public void removeElement( int index )
     {
         Node node = nodes[ index ];
-        if( node == null )
+        if( node == null ) {
             return;
+        }
         unusedElements.push( node );
         nodes[ index ] = null;
         node.unlink();

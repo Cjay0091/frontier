@@ -11,7 +11,9 @@ import com.evelus.frontier.Constants;
 import com.evelus.frontier.game.model.mob.PlayerUpdateBlock;
 import com.evelus.frontier.game.update.SceneList;
 import com.evelus.frontier.net.game.Session;
+import com.evelus.frontier.net.game.frames.PlayerUpdateFrame;
 import com.evelus.frontier.net.game.frames.RebuildMapFrame;
+import org.jboss.netty.channel.Channel;
 
 /**
  * Evelus Development
@@ -44,6 +46,11 @@ public class Player extends Mob {
      * The player scene list for this player.
      */
     private SceneList playerSceneList;
+    
+    /**
+     * The player update frame for this player.
+     */
+    private PlayerUpdateFrame playerUpdateFrame;
 
     /**
      * The updated map sector x coordinate.
@@ -60,7 +67,9 @@ public class Player extends Mob {
      */
     private void initialize( )
     {
+        updateBlock = new PlayerUpdateBlock( );
         playerSceneList = new SceneList( SceneList.PLAYERS_TYPE , Constants.ENTITIES_IN_VIEW , Constants.AMOUNT_PLAYERS );
+        playerUpdateFrame = new PlayerUpdateFrame( this , playerSceneList );
     }
 
     @Override
@@ -96,7 +105,8 @@ public class Player extends Mob {
         Position position = getPosition( );
         updatedSectorX = position.getSectorX();
         updatedSectorY = position.getSectorY();
-        session.getChannel().write( new RebuildMapFrame (   position.getSectorX(),
+        session.getChannel().write( new RebuildMapFrame (   
+                                                            position.getSectorX(),
                                                             position.getSectorY(), 
                                                             position.getMapPositionX(), 
                                                             position.getMapPositionY() 
@@ -110,6 +120,15 @@ public class Player extends Mob {
     {
         Position position = getPosition( );
         playerSceneList.update( position.getPositionX() , position.getPositionY() , position.getHeight() );
+    }
+    
+    /**
+     * Writes all the updates for this player.
+     */
+    public void writeUpdates( )
+    {
+        Channel channel = session.getChannel();
+        channel.write( playerUpdateFrame );
     }
     
     /**

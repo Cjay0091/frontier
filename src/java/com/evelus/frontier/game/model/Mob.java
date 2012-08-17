@@ -54,7 +54,7 @@ public abstract class Mob extends Entity {
      */
     private void initialize( )
     {
-        walkingQueue = new WalkingQueue( 0 );
+        walkingQueue = new WalkingQueue( 100 );
     }
 
     /**
@@ -62,7 +62,7 @@ public abstract class Mob extends Entity {
      */
     public void updateMovement( )
     {
-        if(!teleport) {
+        if( !teleport ) {
             Step step = walkingQueue.poll( );
             if( step != null ) {
                 Position position = getPosition( );
@@ -71,18 +71,31 @@ public abstract class Mob extends Entity {
                 if( isRunning && ( step = walkingQueue.poll() ) != null ) {
                     position.add( step.getDeltaX() , step.getDeltaY() );
                     movementHash |= step.getDirection() << 5 | 2;
-                } else
+                } else {
                     movementHash |= 1;
-            } else
+                }
+            } else {
                 movementHash = 0;
-        } else
+            }
+        } else {
             movementHash = 3;
+        }
     }
 
     /**
      * Updates the mob and finalizes everything for a cycle.
      */
     public abstract void update( );
+    
+    /**
+     * Gets the walking queue for this mob.
+     * 
+     * @return The walking queue.
+     */
+    public WalkingQueue getWalkingQueue( )
+    {
+        return walkingQueue;
+    }
 
     /**
      * Sets the movement hash.
@@ -112,6 +125,16 @@ public abstract class Mob extends Entity {
     public void setUpdateHash( int updateHash )
     {
         this.updateHash = updateHash;
+    }
+    
+    /**
+     * Gets the update hash for this mob.
+     * 
+     * @return The update hash.
+     */
+    public int getUpdateHash( )
+    {
+        return updateHash;
     }
 
     /**

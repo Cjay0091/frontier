@@ -75,6 +75,16 @@ public final class World implements Runnable {
         player.setId( id );
         return true;
     }
+    
+    /**
+     * Unregisters a player from the world.
+     * 
+     * @param player The player to unregister.
+     */
+    public void unregisterPlayer( Player player )
+    {
+        players.removeElement( player.getId() );
+    }
 
     @Override
     public void run( )
@@ -82,8 +92,9 @@ public final class World implements Runnable {
         try {
             for(;;) {
                 synchronized(this) {
-                    if(!isRunning)
+                    if(!isRunning) {
                         break;
+                    }
                 }
                 long startTime = System.currentTimeMillis();
                 for(Player player : players) {
@@ -93,6 +104,7 @@ public final class World implements Runnable {
                 }
                 for(Player player : players) {
                     player.updateLists();
+                    player.writeUpdates();
                 }
                 long takenTime = System.currentTimeMillis() - startTime;
                 if(takenTime < 600L) {
@@ -101,6 +113,7 @@ public final class World implements Runnable {
             }
         } catch(Throwable t) {
             logger.log(Level.INFO, "Exception thrown while handling the logic for the world");
+            t.printStackTrace();
         }
     }
 
@@ -114,6 +127,18 @@ public final class World implements Runnable {
     {
         return players.getElement( id );
     }
+    
+    /**
+     * Starts this world.
+     */
+    public void start( )
+    {
+        if( !isRunning ) {
+            isRunning = true;
+            thread = new Thread( this );
+            thread.start();
+        }
+    }
 
     /**
      * Gets the instance of this class.
@@ -122,8 +147,9 @@ public final class World implements Runnable {
      */
     public static World getInstance( )
     {
-        if( instance == null )
+        if( instance == null ) {
             instance = new World();
+        }
         return instance;
     }
 }

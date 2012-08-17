@@ -15,6 +15,7 @@ import com.evelus.frontier.game.regions.Region;
 import com.evelus.frontier.game.regions.RegionHandler;
 import com.evelus.frontier.game.regions.Sector;
 import com.evelus.frontier.util.LinkedArrayList;
+import java.util.Iterator;
 import java.util.Stack;
 
 /**
@@ -49,7 +50,7 @@ public final class SceneList {
     public SceneList ( int entityType , int size , int amountEntities )
     {
         this.entityType = entityType;
-        activeEntities = new byte[ amountEntities >> 3 ];
+        activeEntities = new byte[ (amountEntities >> 3) + 1 ];
         maximumSize = size;
         initialize( );
     }
@@ -57,8 +58,14 @@ public final class SceneList {
     /**
      * The node for this scene list.
      */
-    private static class Node
+    public static class Node
     {
+                
+        /**
+         * Constructs a new {@link Node};
+         */
+        private Node ( ) { }
+                
         /**
          * The id of the entity.
          */
@@ -74,6 +81,35 @@ public final class SceneList {
          */
         byte state;
         
+        /**
+         * Gets the id.
+         * 
+         * @return The id of the entity.
+         */
+        public int getId( )
+        {
+            return id;
+        }
+        
+        /**
+         * Sets the state.
+         * 
+         * @param state The state value.
+         */
+        public void setState( int state )
+        {
+            this.state = (byte) state;
+        }
+        
+        /**
+         * Gets the state.
+         * 
+         * @return The state.
+         */
+        public byte getState( )
+        {
+            return state;
+        }
     }
 
     /**
@@ -107,8 +143,9 @@ public final class SceneList {
     private void initialize( )
     {
         unusedNodes = new Stack<Node>( );
-        for( int i = 0 ; i < maximumSize ; i++ )
+        for( int i = 0 ; i < maximumSize ; i++ ) {
             unusedNodes.push(new Node());
+        }
         activeNodes = new LinkedArrayList<Node>( maximumSize );
     }
 
@@ -122,24 +159,32 @@ public final class SceneList {
     public void update( int positionX , int positionY , int height )
     {
         if(activeNodes.getSize() > 0) {
-            for( Node node : activeNodes ) {
+            Iterator<Node> iterator = activeNodes.iterator();
+            while( iterator.hasNext() ) {
+                Node node = iterator.next();
                 Mob mob = null;
                 if( entityType == PLAYERS_TYPE) {
                     mob = World.getInstance().getPlayer( node.id );
                 }
                 if( node.state == QUEUE_REMOVE ) {
-                    remove( node );
+                    int id = node.id;
+                    iterator.remove();
+                    activeNodes.removeElement( node.index );
+                    unusedNodes.push( node );
+                    activeEntities[ id >> 3 ] &= ~(1 << id & 7);
                     continue;
                 }
-                if( mob != null && withinView( mob.getPosition() , positionX , positionY , height ) )
+                if( mob != null && withinView( mob.getPosition() , positionX , positionY , height ) ) {
                     continue;
+                }
                 node.state = QUEUE_REMOVE;
             }
         }
-        for( int sPositionX = (positionX - 16) >> 3 ; sPositionX <= (sPositionX + 16) >> 3 ; sPositionX++ ) {
-            for( int sPositionY = (positionY - 16) >> 3 ; sPositionY <= (sPositionY + 16) >> 3 ; sPositionY++ ) {
-                if( activeNodes.getSize() >= maximumSize )
+        for( int sPositionX = (positionX - 16) >> 3 ; sPositionX <= (positionX + 16) >> 3 ; sPositionX++ ) {
+            for( int sPositionY = (positionY - 16) >> 3 ; sPositionY <= (positionY + 16) >> 3 ; sPositionY++ ) {
+                if( activeNodes.getSize() >= maximumSize ) {
                     return;
+                }
                 int rPositionX = sPositionX >> 3;
                 int rPositionY = sPositionY >> 3;
                 Region region = RegionHandler.getRegion( rPositionX , rPositionY );
@@ -158,12 +203,14 @@ public final class SceneList {
                             hasEntities = sector.hasPlayers();
                         }
                     }
-                    if(region == null || !hasEntities)
-                        continue;                    
+                    if(sector == null || !hasEntities) {
+                        continue;
+                    }                    
                     if(entityType == PLAYERS_TYPE) {
                         for(Player player : sector.getPlayers()) {
-                            if( withinView( player.getPosition() , positionX , positionY , height ) )
+                            if( withinView( player.getPosition() , positionX , positionY , height ) ) {
                                 add( player.getId() );
+                            }
                         }
                     }
                 } else {
@@ -196,8 +243,9 @@ public final class SceneList {
      */
     private void add( int id )
     {
-        if((activeEntities[id >> 3] & (1 << id & 7)) != 0)
+        if((activeEntities[ id >> 3 ] & (1 << id & 7)) != 0) {
             return;
+        }
         Node node = unusedNodes.pop();
         node.id = id;
         node.state = NEWLY_ADDED;
@@ -212,9 +260,16 @@ public final class SceneList {
      */
     private void remove( Node node )
     {
-        int id = node.id;
-        activeNodes.removeElement( node.index );
-        unusedNodes.push( node );
-        activeEntities[ id >> 3 ] &= ~(1 << id & 7);
+        
+    }
+    
+    /**
+     * Gets the active nodes in this list.
+     * 
+     * @return The active nodes.
+     */
+    public LinkedArrayList<Node> getActiveNodes( )
+    {
+        return activeNodes;
     }
 }

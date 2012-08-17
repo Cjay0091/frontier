@@ -21,7 +21,7 @@ public final class Constants {
     /**
      * The maximum amount of players allowed for the server.
      */
-    public static final int AMOUNT_PLAYERS = 2048;
+    public static final int AMOUNT_PLAYERS = 2047;
 
     /**
      * The maximum amount of allowed in the view of a players client.
