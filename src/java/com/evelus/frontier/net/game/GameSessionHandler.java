@@ -10,7 +10,8 @@ package com.evelus.frontier.net.game;
 import com.evelus.frontier.game.World;
 import com.evelus.frontier.game.model.Player;
 import com.evelus.frontier.net.game.codec.FrameEncoder;
-import com.evelus.frontier.net.game.frames.LogoutFrame;
+import com.evelus.frontier.net.game.frames.SendMessageFrame;
+import com.evelus.frontier.net.game.frames.SetTabWidgetFrame;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
@@ -51,6 +52,8 @@ public class GameSessionHandler implements SessionHandler {
         channel.write( channelBuffer );
         channel.getPipeline().addFirst( "frameencoder", new FrameEncoder( player.getSession() ) );
         player.rebuildMap( );
+        channel.write( new SetTabWidgetFrame( 3 , 149 ) );
+        channel.write( new SendMessageFrame( "Welcome to Frontier" ) );
     }
 
     @Override

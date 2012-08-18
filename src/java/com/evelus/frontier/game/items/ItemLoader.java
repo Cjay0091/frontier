@@ -10,7 +10,6 @@ package com.evelus.frontier.game.items;
 import com.evelus.frontier.io.Buffer;
 import java.io.*;
 import java.util.logging.*;
-import java.nio.ByteBuffer;
 
 /**
  * Evelus Development
@@ -41,22 +40,22 @@ public final class ItemLoader {
     public static void loadConfig( String filePath ) {
         try {
             DataInputStream dis = new DataInputStream( new FileInputStream(filePath) );
-            Buffer byteBuffer = new Buffer( dis.available() );
-            dis.readFully( byteBuffer.getPayload() );
-            int amountDefs = byteBuffer.getUword();
-            int maximumDef = byteBuffer.getUword();
+            Buffer buffer = new Buffer( dis.available() );
+            dis.readFully( buffer.getPayload() );
+            int amountDefs = buffer.getUword();
+            int maximumDef = buffer.getUword();
             definitions = new ItemDefinition[ maximumDef + 1 ];
             for( int i = 0 ; i < amountDefs ; i++ ) {
-                int id = byteBuffer.getUword();
+                int id = buffer.getUword();
                 ItemDefinition definition = definitions[ id ] = new ItemDefinition( id );
                 while(true) {
-                    int opcode = byteBuffer.getUbyte();
+                    int opcode = buffer.getUbyte();
                     if( opcode == 0 )
                         break;
-                    definition.load( opcode , byteBuffer );
+                    definition.load( opcode , buffer );
                 }
             }
-            logger.log( Level.INFO , "Finished loading " + amountDefs + " item definitions..." );
+            logger.log( Level.INFO , "Finished loading " + amountDefs + " item definitions" );
             dis.close();
         } catch( IOException ioex ) {
             logger.log( Level.INFO , "Failed to load the item configuration" );
@@ -70,8 +69,9 @@ public final class ItemLoader {
      * @return      The definition.
      */
     public static ItemDefinition getDefinition( int id ) {
-        if( id < 0 || id >= definitions.length)
+        if( id < 0 || id >= definitions.length) {
             return null;
+        }
         return definitions[ id ];
     }
 }

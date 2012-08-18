@@ -37,6 +37,16 @@ public final class Constants {
      * The path to the region configuration.
      */
     public static final String REGION_CONFIG_PATH = "./bin/regionconfig.dat";
+    
+    /**
+     * The path to the item configuration.
+     */
+    public static final String ITEM_CONFIG_PATH = "./bin/itemconfig.dat";
+    
+    /**
+     * The path to the widget configuration.
+     */
+    public static final String WIDGET_CONFIG_PATH = "./bin/widgetconfig.dat";
 
     /**
      * The option to have ISAAC active on the server.

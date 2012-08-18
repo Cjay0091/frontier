@@ -7,8 +7,10 @@
 
 package com.evelus.frontier;
 
+import com.evelus.frontier.game.items.ItemLoader;
 import com.evelus.frontier.io.ArchiveManager;
 import com.evelus.frontier.game.regions.RegionHandler;
+import com.evelus.frontier.game.widgets.WidgetLoader;
 
 /**
  * Evelus Development
@@ -31,6 +33,8 @@ public final class Launch {
         } else {
             throw new RuntimeException("launch mode '" + args[1] + "' not recognized.");
         }
+        ItemLoader.loadConfig( Constants.ITEM_CONFIG_PATH );
+        WidgetLoader.loadConfig( Constants.WIDGET_CONFIG_PATH );
         ArchiveManager.initialize( Constants.ARCHIVE_DATABASE_PATH );
         ArchiveManager.loadAll( );
         RegionHandler.loadConfig( Constants.REGION_CONFIG_PATH );

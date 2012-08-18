@@ -1,10 +1,8 @@
 /**
- * Copyright Evelus, All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Written by Hadyn Richard (sini@evel.us), July 2012
+ * Copyright Evelus, All Rights Reserved Unauthorized copying of this file, via
+ * any medium is strictly prohibited Proprietary and confidential Written by
+ * Hadyn Richard (sini@evel.us), July 2012
  */
-
 package com.evelus.frontier.dump;
 
 import com.evelus.frontier.Constants;
@@ -20,111 +18,104 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * Evelus Development
- * Created by Hadyn Richard
+ * Evelus Development Created by Hadyn Richard
  */
 public final class WidgetDump {
-    
+
     /**
      * A widget for this widget dump.
      */
-    private static class Widget
-    {
-        
+    private static class Widget {
+
         /**
          * The flag for if this widget is encoded in the new format.
          */
         boolean isNewFormat;
-        
         /**
          * The type of this widget.
          */
         private int type;
-        
         /**
          * The widget of this widget.
          */
         private int width;
-        
         /**
          * The height of this widget.
          */
         private int height;
-        
         /**
          * The alpha of this widget.
          */
         private int alpha;
-        
         /**
          * The inactive sprite id.
          */
         private int inactiveSpriteId;
-        
         /**
          * The active sprite id.
          */
         private int activeSpriteId;
-        
         /**
          * The option to invert the sprite vertically.
          */
         private boolean invertVertical;
-        
         /**
          * The option to invert the sprite horizontally.
          */
         private boolean invertHorizontal;
-        
         /**
          * The font id for the text of this widget.
          */
         private int fontId;
-        
         /**
-         * The text for this widget.
+         * The inactive text for this widget.
          */
-        private String text;
-        
+        private String inactiveText;
+        /**
+         * The active text for this widget.
+         */
+        private String activeText;
         /**
          * The inactive color for this widget.
          */
         private int inactiveColor;
-        
         /**
          * The active color for this widget.
          */
         private int activeColor;
-        
         /**
          * The option to draw a solid quadrilateral.
          */
         private boolean drawSolidQuad;
-        
+        /**
+         * The option to draw a shadow behind the text.
+         */
+        private boolean drawShadow;
         /**
          * The conditions opcodes.
          */
         private int[] conditionOpcodes;
-        
         /**
          * The condition values.
          */
         private int[] conditionValues;
-        
         /**
          * The script opcodes.
          */
         private int[][] scriptOpcodes;
-     
-       /**
-        * Decodes the new format.
-        * 
-        * @param src The source of the archive to decode.
-        */
-        private void decodeNewFormat( byte[] src )
-        {
+        /**
+         * The item options.
+         */
+        private String[] itemOptions;
+
+        /**
+         * Decodes the new format.
+         *
+         * @param src The source of the archive to decode.
+         */
+        private void decodeNewFormat(byte[] src) {
             isNewFormat = true;
-            Buffer buffer = new Buffer( src );
+            Buffer buffer = new Buffer(src);
             buffer.getUbyte();
             type = buffer.getUbyte();
             buffer.getUword();
@@ -168,7 +159,7 @@ public final class WidgetDump {
                 if (fontId == 65535) {
                     fontId = -1;
                 }
-                text = buffer.getJstr();
+                inactiveText = buffer.getJstr();
                 buffer.getUbyte();
                 buffer.getUbyte();
                 buffer.getUbyte();
@@ -217,17 +208,16 @@ public final class WidgetDump {
             getScriptParams(buffer);
         }
 
-       /**
-        * Decodes the old format.
-        * 
-        * @param src The source of the archive to decode.
-        */
-        private void decodeOldFormat( byte[] src )
-        {
+        /**
+         * Decodes the old format.
+         *
+         * @param src The source of the archive to decode.
+         */
+        private void decodeOldFormat(byte[] src) {
             isNewFormat = false;
-            Buffer buffer = new Buffer( src );
+            Buffer buffer = new Buffer(src);
             type = buffer.getUbyte();
-            int anInt2089 = buffer.getUbyte();
+            int temp = buffer.getUbyte();
             buffer.getUword();
             buffer.getWord();
             buffer.getWord();
@@ -282,8 +272,9 @@ public final class WidgetDump {
                         buffer.getDword();
                     }
                 }
-                for (int i_12_ = 0; i_12_ < 5; i_12_++) {
-                    buffer.getJstr();
+                itemOptions = new String[5];
+                for (int j = 0; j < 5; j++) {
+                    itemOptions[j] = buffer.getJstr();
                 }
             }
             if (type == 3) {
@@ -297,11 +288,11 @@ public final class WidgetDump {
                 if (fontId == 65535) {
                     fontId = -1;
                 }
-                buffer.getUbyte();
+                drawShadow = buffer.getUbyte() == 1;
             }
             if (type == 4) {
-                text = buffer.getJstr();
-                buffer.getJstr();
+                inactiveText = buffer.getJstr();
+                activeText = buffer.getJstr();
             }
             if (type == 1 || type == 3 || type == 4) {
                 inactiveColor = buffer.getDword();
@@ -335,26 +326,27 @@ public final class WidgetDump {
                 buffer.getWord();
                 buffer.getWord();
                 int i_13_ = buffer.getUbyte();
-                for (int i_14_ = 0; i_14_ < 5; i_14_++) {
-                    buffer.getJstr();
+                itemOptions = new String[5];
+                for (int j = 0; j < 5; j++) {
+                    itemOptions[j] = buffer.getJstr();
                 }
             }
             if (type == 8) {
-                text = buffer.getJstr();
+                inactiveText = buffer.getJstr();
             }
-            if (anInt2089 == 2 || type == 2) {
+            if (temp == 2 || type == 2) {
                 buffer.getJstr();
                 buffer.getJstr();
                 int i_15_ = buffer.getUword() & 0x3f;
             }
-            if (anInt2089 == 1 || anInt2089 == 4 || anInt2089 == 5 || anInt2089 == 6) {
+            if (temp == 1 || temp == 4 || temp == 5 || temp == 6) {
                 buffer.getJstr();
             }
         }
-        
+
         /**
          * Gets the script parameters for an action.
-         * 
+         *
          * @param buffer The buffer to read the data from.
          * @return The script params.
          */
@@ -377,216 +369,232 @@ public final class WidgetDump {
             return params;
         }
     }
-    
+
     /**
      * The main entry point for the program.
-     * 
+     *
      * @param args The command line arguments.
      */
-    public static void main( String[] args ) throws Throwable
-    {
-        File path = new File( args[ 0 ] );
-        ArchiveManager.initialize( Constants.ARCHIVE_DATABASE_PATH ); 
-        if( !ArchiveManager.load( 255 , 3 ) ) {
+    public static void main(String[] args) throws Throwable {
+        File path = new File(args[ 0]);
+        ArchiveManager.initialize(Constants.ARCHIVE_DATABASE_PATH);
+        if (!ArchiveManager.load(255, 3)) {
             throw new RuntimeException("failed to load the widget file table");
         }
-        FileTable fileTable = new FileTable( CompressionUtils.decompressArchive( ArchiveManager.getPayload( 255 , 3 ) ) );
-        for( int i = 0 ; i < fileTable.getAmountEntries() ; i++ ) {
-            Entry entry = fileTable.getEntry( i );
+        FileTable fileTable = new FileTable(CompressionUtils.decompressArchive(ArchiveManager.getPayload(255, 3)));
+        for (int i = 0; i < fileTable.getAmountEntries(); i++) {
+            Entry entry = fileTable.getEntry(i);
             int archiveId = entry.getArchiveId();
-            if( !ArchiveManager.load( 3 , archiveId ) ) {
+            if (!ArchiveManager.load(3, archiveId)) {
                 System.out.println("Failed to load archive for widget [id=" + entry.getArchiveId() + "]");
                 continue;
             }
-            byte[] src = CompressionUtils.decompressArchive( ArchiveManager.getPayload( 3 , archiveId ) );
-            BufferedWriter writer = new BufferedWriter( new FileWriter( new File( path , "w" + archiveId ) ) );
+            byte[] src = CompressionUtils.decompressArchive(ArchiveManager.getPayload(3, archiveId));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path, "w" + archiveId)));
             int amountChildren = entry.getAmountChildren();
-            writeHeader( writer , archiveId , amountChildren );
-            if( amountChildren > 1 ) {
-                Archive archive = new Archive( src  , amountChildren );
-                for( int j = 0 ; j < amountChildren ; j++ ) {
-                    byte[] widgetSrc = archive.getFile( j );
-                    Widget widget = decode( widgetSrc );
-                    writeChild( writer , widget , j );
+            writeHeader(writer, archiveId, amountChildren);
+            if (amountChildren > 1) {
+                Archive archive = new Archive(src, amountChildren);
+                for (int j = 0; j < amountChildren; j++) {
+                    byte[] widgetSrc = archive.getFile(j);
+                    Widget widget = decode(widgetSrc);
+                    writeChild(writer, widget, j);
                 }
             } else {
-                Widget widget = decode( src );
-                writeChild( writer , widget , 0 );
+                Widget widget = decode(src);
+                writeChild(writer, widget, 0);
             }
             writer.flush();
             writer.close();
-        } 
+        }
     }
-    
+
     /**
      * Decodes a widget.
-     * 
+     *
      * @param src The source of the widget to decode.
      * @return The widget.
      */
-    private static Widget decode( byte[] src )
-    {
-        Widget widget= new Widget();
-        if( src[0] == -1 ) {
-            widget.decodeNewFormat( src );
+    private static Widget decode(byte[] src) {
+        Widget widget = new Widget();
+        if (src[0] == -1) {
+            widget.decodeNewFormat(src);
         } else {
-            widget.decodeOldFormat( src );
+            widget.decodeOldFormat(src);
         }
         return widget;
-    } 
+    }
 
     /**
      * Writes the header for a file.
-     * 
+     *
      * @param writer The buffered writer to append the header to.
      */
-    private static void writeHeader( BufferedWriter writer , int id , int amountChildren ) throws IOException
-    {
+    private static void writeHeader(BufferedWriter writer, int id, int amountChildren) throws IOException {
         writer.append("|-------------------------------------------------------|\n");
-        writer.append("|                                                       |\n");
-        writer.append("|                                                       |\n");
-        writer.append("|                                                       |\n");
-        writer.append("|          Widget Dump - Id: " + id + ", Children: " + amountChildren + "            |\n");
-        writer.append("|                                                       |\n");
-        writer.append("|                                                       |\n");
+        writer.append("                                                       \n");
+        writer.append("                                                       \n");
+        writer.append("                                                       \n");
+        writer.append("          Widget Dump - Id: " + id + ", Children: " + amountChildren + "\n");
+        writer.append("                                                       \n");
+        writer.append("                                                       \n");
         writer.append("|-------------------------------------------------------|\n");
     }
-    
+
     /**
      * Writes the information for a child widget.
-     * 
+     *
      * @param writer The buffered writer to append the information to.
      * @param widget The widget to write about.
      * @param childId The child id of the widget.
      */
-    private static void writeChild( BufferedWriter writer , Widget widget , int childId ) throws IOException
-    {
+    private static void writeChild(BufferedWriter writer, Widget widget, int childId) throws IOException {
         writer.append("\n\n\n|-------------------------------------------------------|\n\n");
         writer.append("                       Child - " + childId + "\n\n");
         writer.append("|-------------------------------------------------------|\n\n");
-        writer.append( "Type: " + widget.type + "\n" );
-        writer.append( "Width: " + widget.width + "\n" );
-        writer.append( "Height: " + widget.height + "\n" );
-        if( widget.isNewFormat ) {
-            
+        writer.append("Type: " + widget.type + "\n");
+        writer.append("Width: " + widget.width + "\n");
+        writer.append("Height: " + widget.height + "\n");
+        if (widget.isNewFormat) {
         } else {
-            writer.append( "Alpha: " + widget.alpha + "\n" );
-            writeConditions( writer , widget );
-            writeScripts( writer , widget );
+            writer.append("Alpha: " + widget.alpha + "\n");
+            writeConditions(writer, widget);
+            writeScripts(writer, widget);
+            if (widget.type == 2) {
+                writer.append("Options:\n");
+                for (int i = 0; i < 5; i++) {
+                    writer.append("\tOption " + i + ": " + widget.itemOptions[ i] + "\n");
+                }
+            }
+            if (widget.type == 4) {
+                writer.append("Inactive Text: " + widget.inactiveText + "\n");
+                writer.append("Active Text: " + widget.activeText + "\n");
+                writer.append("Inactive Color: " + Integer.toHexString(widget.inactiveColor) + "\n");
+                writer.append("Active Color: " + Integer.toHexString(widget.activeColor) + "\n");
+                writer.append("Font Id: " + widget.fontId + "\n");
+                writer.append("Draw Shadow: " + widget.drawShadow + "\n");
+            }
         }
     }
-    
+
     /**
      * Writes the conditions for a widget.
-     * 
+     *
      * @param writer The writer to append the information to.
      * @param widget The widget to write the condition information for.
      */
-    private static void writeConditions( BufferedWriter writer , Widget widget ) throws IOException
-    {
-        if( widget.conditionOpcodes == null ) {
+    private static void writeConditions(BufferedWriter writer, Widget widget) throws IOException {
+        if (widget.conditionOpcodes == null) {
             return;
         }
         writer.append("\nConditions:\n\n");
-        for( int i = 0 ; i < widget.conditionOpcodes.length ; i++ ) {
+        for (int i = 0; i < widget.conditionOpcodes.length; i++) {
             String comparison = "!=";
-            int opcode = widget.conditionOpcodes[ i ];
+            int opcode = widget.conditionOpcodes[ i];
             if (opcode == 2) {
                 comparison = ">";
-	    } else if (opcode == 3) {
-		comparison = "<";
-	    } else if (opcode != 4) {
-		comparison = "==";
-	    }
-            writer.write("\tscript(" + i + ")" + comparison + " " + widget.conditionValues[i] + "\n\n");
+            } else if (opcode == 3) {
+                comparison = "<";
+            } else if (opcode != 4) {
+                comparison = "==";
+            }
+            writer.write("\tscript(" + i + ") " + comparison + " " + widget.conditionValues[i] + "\n\n");
         }
     }
-    
+
     /**
      * Writes the scripts for a widget.
-     * 
+     *
      * @param writer The writer to append the information to.
      * @param widget The widget to write the scripts for.
      */
-    private static void writeScripts( BufferedWriter writer , Widget widget ) throws IOException
-    {
-        if( widget.scriptOpcodes == null ) {
+    private static void writeScripts(BufferedWriter writer, Widget widget) throws IOException {
+        if (widget.scriptOpcodes == null) {
             return;
         }
         writer.append("\nScripts:\n\n");
-        for( int i = 0 ; i < widget.scriptOpcodes.length ; i++ ) {
-            int[] opcodes = widget.scriptOpcodes[ i ];
+        for (int i = 0; i < widget.scriptOpcodes.length; i++) {
+            int[] opcodes = widget.scriptOpcodes[ i];
             writer.append("\tScript " + i + ":\n\n");
             writer.append("\t\t");
             int offset = 0;
-            int arithmetic = 0;   
+            int arithmetic = 0;
             boolean bool = false;
-            for( ; ; ) {
-                int opcode = opcodes[ offset++ ];
+            for (;;) {
+                int opcode = opcodes[ offset++];
                 String operation = "";
                 int queuedArithmetic = 0;
-                if( opcode == 0 )
+                if (opcode == 0) {
                     break;
-                if (opcode == 15)
-		    queuedArithmetic = 1;
-		if (opcode == 1)
-		    operation = "dynamicLevel(" + opcodes[ offset++ ] + ")";
-		if (opcode == 16)
-		    queuedArithmetic = 2;
-		if (opcode == 17)
-		    queuedArithmetic = 3;
-		if (opcode == 2)
-		    operation = "staticLevel(" + opcodes[ offset++ ] + ")";
-		if (opcode == 3)
-		    operation = "levelXp(" + opcodes[ offset++ ] + ")";
-		if (opcode == 4) {
-		    int parentId = opcodes[offset++];
-		    int childId = opcodes[offset++];
-		    int itemId = opcodes[offset++];
+                }
+                if (opcode == 15) {
+                    queuedArithmetic = 1;
+                }
+                if (opcode == 1) {
+                    operation = "dynamicLevel(" + opcodes[ offset++] + ")";
+                }
+                if (opcode == 16) {
+                    queuedArithmetic = 2;
+                }
+                if (opcode == 17) {
+                    queuedArithmetic = 3;
+                }
+                if (opcode == 2) {
+                    operation = "staticLevel(" + opcodes[ offset++] + ")";
+                }
+                if (opcode == 3) {
+                    operation = "levelXp(" + opcodes[ offset++] + ")";
+                }
+                if (opcode == 4) {
+                    int parentId = opcodes[offset++];
+                    int childId = opcodes[offset++];
+                    int itemId = opcodes[offset++];
                     operation = "countOfItem(" + parentId + " , " + childId + " , " + itemId + ")";
-		}
-		if (opcode == 5)
-		    operation = "state(" + opcodes[offset++] + ")";
-		if (opcode == 6) {
-                    operation = "UNKNOWN";
-		    offset++;
                 }
-		if (opcode == 7) {
-		    operation = "UNKNOWN";
-		    offset++;
+                if (opcode == 5) {
+                    operation = "state(" + opcodes[offset++] + ")";
                 }
-                if (opcode == 8)
-		    operation = "UNKNOWN";
-		if (opcode == 9) {
-		    operation = "UNKNOWN";
-		}
-		if (opcode == 10) {
-		    int i_17_ = opcodes[offset++] << 16;
-		    i_17_ += opcodes[offset++];
-		    int i_19_ = opcodes[offset++];
+                if (opcode == 6) {
                     operation = "UNKNOWN";
-		} else if (opcode == 11) {
-		    operation = "UNKNOWN";
+                    offset++;
+                }
+                if (opcode == 7) {
+                    operation = "UNKNOWN";
+                    offset++;
+                }
+                if (opcode == 8) {
+                    operation = "UNKNOWN";
+                }
+                if (opcode == 9) {
+                    operation = "UNKNOWN";
+                }
+                if (opcode == 10) {
+                    int i_17_ = opcodes[offset++] << 16;
+                    i_17_ += opcodes[offset++];
+                    int i_19_ = opcodes[offset++];
+                    operation = "UNKNOWN";
+                } else if (opcode == 11) {
+                    operation = "UNKNOWN";
                 } else if (opcode == 12) {
-		    operation = "UNKNOWN";
+                    operation = "UNKNOWN";
                 } else if (opcode == 13) {
-		    int i_21_ = opcodes[offset++];
-		    int i_22_ = opcodes[offset++];
+                    int i_21_ = opcodes[offset++];
+                    int i_22_ = opcodes[offset++];
                     operation = "getBitActive(" + i_21_ + " , " + i_22_ + ")";
-		} else if (opcode == 14) {
-		    int i_23_ = opcodes[offset++];
-		    operation = "getVarbit(" + i_23_ + ")";
-		} else if (opcode == 18) {
-		    operation = "UNKNOWN";
+                } else if (opcode == 14) {
+                    int i_23_ = opcodes[offset++];
+                    operation = "getVarbit(" + i_23_ + ")";
+                } else if (opcode == 18) {
+                    operation = "UNKNOWN";
                 } else if (opcode == 19) {
-		    operation = "UNKNOWN";
+                    operation = "UNKNOWN";
                 } else if (opcode == 20) {
                     operation = "" + opcodes[offset++];
-                } 
+                }
                 if (queuedArithmetic != 0) {
                     arithmetic = queuedArithmetic;
                 } else {
-                    if( bool ) {
+                    if (bool) {
                         char op = '+';
                         if (arithmetic == 1) {
                             op = '-';
@@ -595,13 +603,13 @@ public final class WidgetDump {
                         } else if (arithmetic == 3) {
                             op = '*';
                         }
-                        writer.append( " " + op + " " );
+                        writer.append(" " + op + " ");
                     } else {
                         bool = true;
                     }
-                    writer.append( operation );
-		    arithmetic = 0;
-		}
+                    writer.append(operation);
+                    arithmetic = 0;
+                }
             }
             writer.append("\n\n");
         }

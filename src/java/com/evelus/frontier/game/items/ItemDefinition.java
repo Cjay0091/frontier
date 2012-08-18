@@ -50,7 +50,7 @@ public final class ItemDefinition {
      * Loads a data operation for this definition.
      *
      * @param opcode    The opcode of the operation to preform.
-     * @param jagbuffer The jagbuffer to read the operation's data from.
+     * @param jagbuffer The buffer to read the operation's data from.
      */
     public void load( int opcode , Buffer byteBuffer )
     {

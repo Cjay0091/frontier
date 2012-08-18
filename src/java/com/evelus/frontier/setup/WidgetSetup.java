@@ -7,62 +7,86 @@
 
 package com.evelus.frontier.setup;
 
-import java.io.*;
-import java.sql.*;
+import com.evelus.frontier.game.widgets.WidgetDefinition;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class ItemSetup {
-
+public final class WidgetSetup {
+    
     /**
      * The definitions table name constant.
      */
-    private static final String DEFS_TABLE = "evelus_itemdefs";
+    private static final String DEFS_TABLE = "evelus_widgetdefs";
 
     /**
      * Prevent construction;
      */
-    private ItemSetup ( ) { }
+    private WidgetSetup ( ) { }
 
     /**
      * The item definition class.
      */
-    private static class ItemDefinition
+    private static class Definition
     {
 
         /**
-         * The id of this item.
+         * The id of this widget.
          */
         private int id;
+        
+        /**
+         * The hash of this widget.
+         */
+        private int hash;
+        
+        /**
+         * The type of this widget.
+         */
+        private int type;
+        
+        /**
+         * The id of the container for this widget.
+         */
+        private int containerId;
+        
+        /**
+         * The size of this widget.
+         */
+        private int size;
 
         /**
-         * The name of this item.
+         * Constructs a new {@link Definition};
          */
-        private String name;
-
-        /**
-         * Constructs a new {@link ItemDefinition};
-         */
-        public ItemDefinition ( )
+        public Definition ( )
         {
             id = -1;
-            name = "";
+            hash = -1;
+            type = -1;
+            size = -1;
         }
     }
-
+    
     /**
-     * The main entry point of this program.
-     *
+     * The main entry point for the program.
+     * 
      * @param args The command line arguments.
      */
-    public static void main( String[] args ) throws Exception
+    public static void main( String[] args )throws Exception
     {
         Connection connection = DriverManager.getConnection( "jdbc:mysql://" + args[0] + "/" + args[1] + "?user=" + args[2] + "&password=" + args[3] );
         FileOutputStream fos = new FileOutputStream( args[4] );
         int amountDefs = getAmountDefs( connection );
-        ItemDefinition[] definitions = new ItemDefinition[ amountDefs ];
+        Definition[] definitions = new Definition[ amountDefs ];
         loadDefinitions( connection , definitions );
         writeWord( fos , amountDefs );
         writeWord( fos , getMaximumDef(connection) );
@@ -72,8 +96,8 @@ public final class ItemSetup {
         fos.flush();
         fos.close();
     }
-
-    /**
+    
+      /**
      * Gets the amount of item definitions in the definitions table.
      *
      * @param connection        The connection to query the information from.
@@ -107,7 +131,7 @@ public final class ItemSetup {
         Statement statement = connection.createStatement();
         int maximumId = 0;
         try {
-            ResultSet results = statement.executeQuery( "SELECT item_id FROM " + DEFS_TABLE + " ORDER BY 1 DESC" );
+            ResultSet results = statement.executeQuery( "SELECT widget_id FROM " + DEFS_TABLE + " ORDER BY 1 DESC" );
             if(results.next()) {
                 maximumId = results.getInt(1);
             }
@@ -123,16 +147,21 @@ public final class ItemSetup {
      * @param connection    The connection to query the information from.
      * @param definitions   The item definitions to load the information to.
      */
-    private static void loadDefinitions( Connection connection, ItemDefinition[] definitions ) throws SQLException
+    private static void loadDefinitions( Connection connection, Definition[] definitions ) throws SQLException
     {
         Statement statement = connection.createStatement();
         int counter = 0;
         try {
             ResultSet results = statement.executeQuery( "SELECT * FROM " + DEFS_TABLE);
             while( results.next() ) {
-                ItemDefinition definition = definitions[ counter++ ] = new ItemDefinition();
-                definition.id = results.getInt("item_id");
-                definition.name = results.getString("name");
+                Definition definition = definitions[ counter++ ] = new Definition();
+                definition.id = results.getInt("widget_id");
+                definition.hash = results.getInt("widget_hash");
+                int type = definition.type = results.getInt("type");
+                if( type == WidgetDefinition.CONTAINER_TYPE ) {
+                    definition.containerId = results.getInt("container_id");
+                    definition.size = results.getInt("size");
+                }
             }
         } finally {
             statement.close();
@@ -145,14 +174,31 @@ public final class ItemSetup {
      * @param definition    The definition to encode to the outputstream.
      * @param outputStream  The output stream to encode the definition to.
      */
-    private static void encodeDefinition( ItemDefinition itemDefinition , OutputStream os ) throws IOException
+    private static void encodeDefinition( Definition definition , OutputStream os ) throws IOException
     {
-        writeWord( os , itemDefinition.id );
-        os.write(1);
-        writeStr( os , itemDefinition.name );
-        os.write(0);
+        writeWord( os , definition.id );
+        writeDword( os , definition.hash );
+        os.write( definition.type );
+        if( definition.type == WidgetDefinition.CONTAINER_TYPE ) {
+            os.write( definition.containerId );
+            writeWord( os , definition.size );
+        }
     }
 
+    /**
+     * Writes a dword to an outputstream.
+     *
+     * @param os    The outputstream to write the word to.
+     * @param value The value of the dword to write.
+     */
+    private static void writeDword( OutputStream os , int value ) throws IOException
+    {
+        os.write(value >> 24);
+        os.write(value >> 16);
+        os.write(value >> 8);
+        os.write(value);
+    }
+    
     /**
      * Writes a word to an outputstream.
      *
@@ -165,26 +211,11 @@ public final class ItemSetup {
         os.write(value);
     }
 
-    /**
-     * Writes a jagex formatted string to an outputstream.
-     *
-     * @param os    The outputstream to write the string to.
-     * @param str   The string to write to the output stream.
-     */
-    private static void writeStr( OutputStream os , String str ) throws IOException
-    {
-        os.write(str.getBytes());
-        os.write(0);
-    }
-
     static {
-        try
-        {
+        try {
             Class.forName( "com.mysql.jdbc.Driver" );
-        }
-         catch(Throwable t)
-        {
-            throw new RuntimeException(t);
+        } catch(Throwable t) {
+            throw new RuntimeException( t );
         }
     }
 }

@@ -18,7 +18,15 @@ public final class GameFrameDecoder implements FrameDecoder {
      * 
      * @param handler The session handler for this frame decoder.
      */
-    public GameFrameDecoder ( GameSessionHandler handler ) { }
+    public GameFrameDecoder ( GameSessionHandler handler ) 
+    {
+        this.handler = handler;
+    }
+    
+    /**
+     * The handler for this frame decoder.
+     */
+    private GameSessionHandler handler;
     
     @Override
     public void decode( Session session , IncomingFrame incomingFrame ) 
