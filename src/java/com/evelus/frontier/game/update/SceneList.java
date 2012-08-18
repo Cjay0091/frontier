@@ -7,9 +7,9 @@
 
 package com.evelus.frontier.game.update;
 
-import com.evelus.frontier.game.World;
-import com.evelus.frontier.game.model.Mob;
-import com.evelus.frontier.game.model.Player;
+import com.evelus.frontier.game.GameWorld;
+import com.evelus.frontier.game.model.GameMob;
+import com.evelus.frontier.game.model.GamePlayer;
 import com.evelus.frontier.game.model.Position;
 import com.evelus.frontier.game.regions.Region;
 import com.evelus.frontier.game.regions.RegionHandler;
@@ -162,9 +162,9 @@ public final class SceneList {
             Iterator<Node> iterator = activeNodes.iterator();
             while( iterator.hasNext() ) {
                 Node node = iterator.next();
-                Mob mob = null;
+                GameMob mob = null;
                 if( entityType == PLAYERS_TYPE) {
-                    mob = World.getInstance().getPlayer( node.id );
+                    mob = GameWorld.getInstance().getPlayer( node.id );
                 }
                 if( node.state == QUEUE_REMOVE ) {
                     int id = node.id;
@@ -207,7 +207,7 @@ public final class SceneList {
                         continue;
                     }                    
                     if(entityType == PLAYERS_TYPE) {
-                        for(Player player : sector.getPlayers()) {
+                        for(GamePlayer player : sector.getPlayers()) {
                             if( withinView( player.getPosition() , positionX , positionY , height ) ) {
                                 add( player.getId() );
                             }

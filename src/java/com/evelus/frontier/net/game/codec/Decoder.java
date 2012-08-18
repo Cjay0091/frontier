@@ -118,9 +118,10 @@ public final class Decoder extends FrameDecoder {
         FRAME_SIZES[  15 ] =  4;                           // Ondemand connect
         FRAME_SIZES[  16 ] = -1;                           // Login request
         FRAME_SIZES[  21 ] =  0;                           // Dunno
+        FRAME_SIZES[  54 ] =  4;                           // Widget click
         FRAME_SIZES[  86 ] =  0;                           // Dunno
         FRAME_SIZES[ 141 ] =  4;                           // Dunno
-        FRAME_SIZES[ 164 ] =  4;                           // Click
+        FRAME_SIZES[ 162 ] =  4;                           // Mouse click
         FRAME_SIZES[ 174 ] = -1;                           // Command
         FRAME_SIZES[ 207 ] =  1;                           // Focus
     }

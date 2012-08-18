@@ -160,7 +160,7 @@ public final class WidgetSetup {
                 int type = definition.type = results.getInt("type");
                 if( type == WidgetDefinition.CONTAINER_TYPE ) {
                     definition.containerId = results.getInt("container_id");
-                    definition.size = results.getInt("size");
+                    definition.size = results.getInt("container_size");
                 }
             }
         } finally {

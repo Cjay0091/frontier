@@ -8,7 +8,7 @@
 package com.evelus.frontier.game.regions;
 
 import com.evelus.frontier.game.model.Entity;
-import com.evelus.frontier.game.model.Player;
+import com.evelus.frontier.game.model.GamePlayer;
 import com.evelus.frontier.io.Buffer;
 
 /**
@@ -83,7 +83,7 @@ public final class Region {
         Sector sector = sectors[ lsPositionX ][ lsPositionY ];
         if( !sector.addEntity(entity) )
             return false;
-        if( entity instanceof Player )
+        if( entity instanceof GamePlayer )
             playerCount++;
         return true;
     }
@@ -101,7 +101,7 @@ public final class Region {
             return;
         Sector sector = sectors[ lsPositionX ][ lsPositionY ];
         sector.removeEntity( entity );
-        if( entity instanceof Player )
+        if( entity instanceof GamePlayer )
             playerCount--;
     }
 

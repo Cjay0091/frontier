@@ -8,7 +8,7 @@
 package com.evelus.frontier.game;
 
 import com.evelus.frontier.Constants;
-import com.evelus.frontier.game.model.Player;
+import com.evelus.frontier.game.model.GamePlayer;
 import com.evelus.frontier.util.LinkedArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,22 +17,22 @@ import java.util.logging.Logger;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class World implements Runnable {
+public final class GameWorld implements Runnable {
 
     /**
      * The logger instance for this world.
      */
-    private static final Logger logger = Logger.getLogger(World.class.getSimpleName());
+    private static final Logger logger = Logger.getLogger(GameWorld.class.getSimpleName());
 
     /**
      * The instance of this world.
      */
-    private static World instance;
+    private static GameWorld instance;
 
     /**
      * Construct a new {@link World};
      */
-    private World ( ) 
+    private GameWorld ( ) 
     {
         initialize( );
     }
@@ -40,7 +40,7 @@ public final class World implements Runnable {
     /**
      * The players within this world.
      */
-    private LinkedArrayList<Player> players;
+    private LinkedArrayList<GamePlayer> players;
 
     /**
      * The thread that this world is running on.
@@ -57,7 +57,7 @@ public final class World implements Runnable {
      */
     private void initialize( )
     {
-        players = new LinkedArrayList<Player>( Constants.AMOUNT_PLAYERS );
+        players = new LinkedArrayList<GamePlayer>( Constants.AMOUNT_PLAYERS );
     }
     
     /**
@@ -66,7 +66,7 @@ public final class World implements Runnable {
      * @param player The player to register to this world.
      * @return If the player was successfully registered.
      */
-    public boolean registerPlayer( Player player )
+    public boolean registerPlayer( GamePlayer player )
     {
         int id = players.addElement( player );
         if( id == -1 ) {
@@ -81,7 +81,7 @@ public final class World implements Runnable {
      * 
      * @param player The player to unregister.
      */
-    public void unregisterPlayer( Player player )
+    public void unregisterPlayer( GamePlayer player )
     {
         players.removeElement( player.getId() );
     }
@@ -97,12 +97,12 @@ public final class World implements Runnable {
                     }
                 }
                 long startTime = System.currentTimeMillis();
-                for(Player player : players) {
+                for(GamePlayer player : players) {
                     player.update();
                     player.updateMovement();
                     player.updateLocation();
                 }
-                for(Player player : players) {
+                for(GamePlayer player : players) {
                     player.updateLists();
                     player.writeUpdates();
                 }
@@ -123,7 +123,7 @@ public final class World implements Runnable {
      * @param id The id of the player to get.
      * @return The player.
      */
-    public Player getPlayer( int id )
+    public GamePlayer getPlayer( int id )
     {
         return players.getElement( id );
     }
@@ -145,10 +145,10 @@ public final class World implements Runnable {
      *
      * @return The instance.
      */
-    public static World getInstance( )
+    public static GameWorld getInstance( )
     {
         if( instance == null ) {
-            instance = new World();
+            instance = new GameWorld();
         }
         return instance;
     }

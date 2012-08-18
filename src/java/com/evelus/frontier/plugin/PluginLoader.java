@@ -7,8 +7,8 @@
 
 package com.evelus.frontier.plugin;
 
+import com.evelus.frontier.game.widgets.WidgetLoader;
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
@@ -52,6 +52,11 @@ public final class PluginLoader implements PluginController {
     private Map<String, Plugin> plugins;
     
     /**
+     * The plugin context for this plugin loader.
+     */
+    private PluginContext context;
+    
+    /**
      * Loads all the plugins within the path.
      * 
      * @param filePath The file path to load the plugins from.
@@ -91,8 +96,17 @@ public final class PluginLoader implements PluginController {
         }
         Class<Plugin> pluginClass = (Class<Plugin>) classLoader.loadClass( "plugin.PluginImpl" );
         Plugin plugin = pluginClass.newInstance();
-        plugin.onLoad();
+        plugin.onLoad( this );
         plugins.put( plugin.getName() , plugin);
+    }
+    
+    @Override
+    public PluginContext getContext() {
+        if( context == null ) {
+            context = new PluginContext();
+            context.provideWidgetController( WidgetLoader.getInstance() );
+        }
+        return context;
     }
     
     /**

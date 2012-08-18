@@ -7,9 +7,9 @@
 
 package com.evelus.frontier.net.game.frames;
 
-import com.evelus.frontier.game.World;
-import com.evelus.frontier.game.model.Mob;
-import com.evelus.frontier.game.model.Player;
+import com.evelus.frontier.game.GameWorld;
+import com.evelus.frontier.game.model.GameMob;
+import com.evelus.frontier.game.model.GamePlayer;
 import com.evelus.frontier.game.model.Position;
 import com.evelus.frontier.game.update.SceneList;
 import com.evelus.frontier.io.Buffer;
@@ -26,7 +26,7 @@ public final class PlayerUpdateFrame extends MobUpdateFrame {
      * @param localPlayer The local player for this player update frame.
      * @param sceneList The scene list to use for this mob update frame.
      */
-    public PlayerUpdateFrame ( Player localPlayer , SceneList sceneList ) 
+    public PlayerUpdateFrame ( GamePlayer localPlayer , SceneList sceneList ) 
     {
         super( 29, sceneList );
         this.localPlayer = localPlayer;
@@ -35,7 +35,7 @@ public final class PlayerUpdateFrame extends MobUpdateFrame {
     /**
      * The local player for this player update frame.
      */
-    private Player localPlayer;
+    private GamePlayer localPlayer;
     
     @Override
     public void encode( Buffer buffer ) 
@@ -82,7 +82,7 @@ public final class PlayerUpdateFrame extends MobUpdateFrame {
     }
 
     @Override
-    public void encodePopulateUpdate( Buffer buffer , Mob mob ) 
+    public void encodePopulateUpdate( Buffer buffer , GameMob mob ) 
     {
         buffer.putBits( mob.getId() , 11 );
         boolean maskUpdate = mob.getUpdateHash() != 0;
@@ -113,10 +113,10 @@ public final class PlayerUpdateFrame extends MobUpdateFrame {
     }
 
     @Override
-    public Mob getMob(int id) {
+    public GameMob getMob(int id) {
         if( id == localPlayer.getId() ) {
             return null;
         }
-        return World.getInstance().getPlayer( id );
+        return GameWorld.getInstance().getPlayer( id );
     }
 }

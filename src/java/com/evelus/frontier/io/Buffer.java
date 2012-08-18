@@ -111,7 +111,7 @@ public final class Buffer {
      */
     public void putByteA( int value )
     {
-        payload[ offset++ ] = (byte) (-value);
+        payload[ offset++ ] = (byte) ( -value );
     }
 
     /**

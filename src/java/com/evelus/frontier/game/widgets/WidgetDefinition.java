@@ -16,9 +16,14 @@ import com.evelus.frontier.io.Buffer;
 public final class WidgetDefinition {
     
     /**
-     * The local container widget type.
+     * The container widget type.
      */
     public static final int CONTAINER_TYPE = 0;
+    
+    /**
+     * The button widget type.
+     */
+    public static final int BUTTON_TYPE = 2;
     
     /**
      * Constructs a new {@link WidgetDefinition};
@@ -30,7 +35,7 @@ public final class WidgetDefinition {
         this.id = id;
         type = -1;
         containerId = -1;
-        size = -1;
+        containerSize = -1;
     }
     
     /**
@@ -51,7 +56,7 @@ public final class WidgetDefinition {
     /**
      * The size of this widget.
      */
-    private int size;
+    private int containerSize;
     
     /**
      * Loads the data for this definition.
@@ -63,7 +68,10 @@ public final class WidgetDefinition {
         type = buffer.getUbyte();
         if( type == CONTAINER_TYPE ) {
             containerId = buffer.getUbyte();
-            size = buffer.getUword();
+            containerSize = buffer.getUword();
+        }
+        if( type == BUTTON_TYPE ) {
+            
         }
     }
     
@@ -88,12 +96,12 @@ public final class WidgetDefinition {
     }
     
     /**
-     * Gets the size of this widget.
+     * Gets the container size of this widget.
      * 
-     * @return The size.
+     * @return The container size.
      */
-    public int getSize( )
+    public int getContainerSize( )
     {
-        return size;
+        return containerSize;
     }
 }

@@ -7,7 +7,7 @@
 
 package com.evelus.frontier.net.game.frames;
 
-import com.evelus.frontier.game.model.Mob;
+import com.evelus.frontier.game.model.GameMob;
 import com.evelus.frontier.game.update.SceneList;
 import com.evelus.frontier.game.update.SceneList.Node;
 import com.evelus.frontier.io.Buffer;
@@ -75,7 +75,7 @@ public abstract class MobUpdateFrame extends OutgoingFrame {
                 if( node.getState() == SceneList.NEWLY_ADDED ) {
                     continue;
                 }
-                Mob mob = getMob( node.getId() );
+                GameMob mob = getMob( node.getId() );
                 if( mob != null ) {
                     if( node.getState() != SceneList.QUEUE_REMOVE ) {
                         int movementHash = mob.getMovementHash();
@@ -125,7 +125,7 @@ public abstract class MobUpdateFrame extends OutgoingFrame {
                 if( node.getState() != SceneList.NEWLY_ADDED ) {
                     continue;
                 }
-                Mob mob = getMob( node.getId() );
+                GameMob mob = getMob( node.getId() );
                 if( mob != null ) {
                     encodePopulateUpdate( buffer , mob );
                     node.setState( SceneList.ACTIVE );
@@ -153,7 +153,7 @@ public abstract class MobUpdateFrame extends OutgoingFrame {
      * @param buffer The buffer to encode the populate update to.
      * @param mob The mob to populate.
      */
-    public abstract void encodePopulateUpdate( Buffer buffer , Mob mob );
+    public abstract void encodePopulateUpdate( Buffer buffer , GameMob mob );
     
     /**
      * Writes the end of a population update.
@@ -167,6 +167,6 @@ public abstract class MobUpdateFrame extends OutgoingFrame {
      * @param id The id of the mob to get.
      * @return The mob.
      */
-    public abstract Mob getMob( int id );
+    public abstract GameMob getMob( int id );
     
 }

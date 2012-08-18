@@ -9,8 +9,8 @@ package com.evelus.frontier.net.game;
 
 import com.evelus.frontier.Constants;
 import com.evelus.frontier.Server;
-import com.evelus.frontier.game.World;
-import com.evelus.frontier.game.model.Player;
+import com.evelus.frontier.game.GameWorld;
+import com.evelus.frontier.game.model.GamePlayer;
 import com.evelus.frontier.game.ondemand.OndemandSession;
 import com.evelus.frontier.game.ondemand.OndemandWorker;
 import com.evelus.frontier.io.ArchiveManager;
@@ -161,8 +161,8 @@ public class InitialFrameDecoder implements FrameDecoder {
             buffer.getDword();
             buffer.getQword();
             buffer.getJstr();
-            Player player = new Player( session );
-            if( !World.getInstance().registerPlayer( player ) ) {
+            GamePlayer player = new GamePlayer( session );
+            if( !GameWorld.getInstance().registerPlayer( player ) ) {
                 ChannelBuffer channelBuffer = ChannelBuffers.buffer( 1 );
                 channelBuffer.writeByte( 7 );
                 session.getChannel().write( channelBuffer ).addListener( ChannelFutureListener.CLOSE );

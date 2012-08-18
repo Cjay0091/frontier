@@ -7,12 +7,12 @@
 
 package com.evelus.frontier.net.game;
 
-import com.evelus.frontier.game.World;
+import com.evelus.frontier.game.GameWorld;
 import com.evelus.frontier.game.items.GameItem;
 import com.evelus.frontier.game.items.ItemContainer;
 import com.evelus.frontier.game.items.ItemDefinition;
 import com.evelus.frontier.game.items.ItemLoader;
-import com.evelus.frontier.game.model.Player;
+import com.evelus.frontier.game.model.GamePlayer;
 import com.evelus.frontier.net.game.codec.FrameEncoder;
 import com.evelus.frontier.net.game.frames.SendItemsFrame;
 import com.evelus.frontier.net.game.frames.SendMessageFrame;
@@ -32,7 +32,7 @@ public class GameSessionHandler implements SessionHandler {
      * 
      * @param player The player for this session handler.
      */
-    public GameSessionHandler ( Player player ) 
+    public GameSessionHandler ( GamePlayer player ) 
     { 
         this.player = player;
     }
@@ -40,7 +40,7 @@ public class GameSessionHandler implements SessionHandler {
     /**
      * The player for this session handler.
      */
-    private Player player;
+    private GamePlayer player;
     
     /**
      * Handles a command sent from the client.
@@ -102,13 +102,13 @@ public class GameSessionHandler implements SessionHandler {
         channel.write( channelBuffer );
         channel.getPipeline().addFirst( "frameencoder", new FrameEncoder( player.getSession() ) );
         player.rebuildMap( );
-        channel.write( new SetTabWidgetFrame( 3 , 149 ) );
+        player.getWidgetHandler().updateTabs( );
         channel.write( new SendMessageFrame( "Welcome to Frontier" ) );
     }
 
     @Override
     public void destroy( ) 
     {
-        World.getInstance().unregisterPlayer( player );
+        GameWorld.getInstance().unregisterPlayer( player );
     }
 }

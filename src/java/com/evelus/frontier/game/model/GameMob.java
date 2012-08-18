@@ -14,12 +14,12 @@ import com.evelus.frontier.game.model.mob.WalkingQueue.Step;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public abstract class Mob extends Entity {
+public abstract class GameMob extends Entity {
 
     /**
      * Constructs a new {@link Mob};
      */
-    public Mob ( ) 
+    public GameMob ( ) 
     {
         initialize( );
     }

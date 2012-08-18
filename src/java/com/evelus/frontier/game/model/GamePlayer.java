@@ -10,6 +10,7 @@ package com.evelus.frontier.game.model;
 import com.evelus.frontier.Constants;
 import com.evelus.frontier.game.model.mob.PlayerUpdateBlock;
 import com.evelus.frontier.game.model.player.ItemHandler;
+import com.evelus.frontier.game.model.player.WidgetHandler;
 import com.evelus.frontier.game.update.SceneList;
 import com.evelus.frontier.net.game.OutgoingFrame;
 import com.evelus.frontier.net.game.Session;
@@ -21,12 +22,12 @@ import org.jboss.netty.channel.Channel;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public class Player extends Mob {
+public class GamePlayer extends GameMob implements Player {
 
     /**
      * Constructs a new {@link Player};
      */
-    public Player ( Session session )
+    public GamePlayer ( Session session )
     {
         updatedSectorX = -1;
         updatedSectorY = -1;
@@ -58,6 +59,11 @@ public class Player extends Mob {
      * The item handler for this player.
      */
     private ItemHandler itemHandler;
+    
+    /**
+     * The widget handler for this player.
+     */
+    private WidgetHandler widgetHandler;
 
     /**
      * The updated map sector x coordinate.
@@ -78,6 +84,7 @@ public class Player extends Mob {
         playerSceneList = new SceneList( SceneList.PLAYERS_TYPE , Constants.ENTITIES_IN_VIEW , Constants.AMOUNT_PLAYERS );
         playerUpdateFrame = new PlayerUpdateFrame( this , playerSceneList );
         itemHandler = new ItemHandler( );
+        widgetHandler = new WidgetHandler( this );
     }
 
     @Override
@@ -147,6 +154,16 @@ public class Player extends Mob {
     public ItemHandler getItemHandler( )
     {
         return itemHandler;
+    }
+    
+    /**
+     * Gets the widget handler for this player.
+     * 
+     * @return The widget handler.
+     */
+    public WidgetHandler getWidgetHandler( )
+    {
+        return widgetHandler;
     }
     
     /**

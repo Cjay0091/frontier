@@ -8,7 +8,7 @@
 package com.evelus.frontier.game.regions;
 
 import com.evelus.frontier.game.model.Entity;
-import com.evelus.frontier.game.model.Player;
+import com.evelus.frontier.game.model.GamePlayer;
 import com.evelus.frontier.util.LinkedArrayList;
 
 /**
@@ -30,13 +30,13 @@ public final class Sector {
      */
     public Sector ( )
     {
-        players = new LinkedArrayList<Player>(ENTITIES_PER_SECTOR);
+        players = new LinkedArrayList<GamePlayer>(ENTITIES_PER_SECTOR);
     }
 
     /**
      * The players within this sector.
      */
-    private LinkedArrayList<Player> players;
+    private LinkedArrayList<GamePlayer> players;
 
     /**
      * Adds an entity to this sector.
@@ -47,8 +47,8 @@ public final class Sector {
     public boolean addEntity( Entity entity )
     {
         int index = -1;
-        if( entity instanceof Player ) {
-            index = players.addElement( (Player) entity );
+        if( entity instanceof GamePlayer ) {
+            index = players.addElement( (GamePlayer) entity );
         } else
             throw new RuntimeException( );
         entity.setSectorIndex( index );
@@ -63,7 +63,7 @@ public final class Sector {
     public void removeEntity( Entity entity )
     {
         LinkedArrayList backedList = null;
-        if( entity instanceof Player ) {
+        if( entity instanceof GamePlayer ) {
             backedList = players;
         } else
             throw new RuntimeException( );
@@ -75,7 +75,7 @@ public final class Sector {
      *
      * @return The players.
      */
-    public LinkedArrayList<Player> getPlayers( )
+    public LinkedArrayList<GamePlayer> getPlayers( )
     {
         return players;
     }

@@ -7,7 +7,7 @@
 
 package com.evelus.frontier;
 
-import com.evelus.frontier.game.World;
+import com.evelus.frontier.game.GameWorld;
 import com.evelus.frontier.game.ondemand.OndemandWorker;
 import com.evelus.frontier.net.game.Session;
 import com.evelus.frontier.net.game.PipelineFactory;
@@ -114,7 +114,7 @@ public final class Server {
                 }
                 sessions = new LinkedArrayList<Session>( 4096 );
                 bind( 40000 + serverId );
-                World.getInstance().start();
+                GameWorld.getInstance().start();
                 OndemandWorker.getInstance().start();
             }
             if( i == OFFLINE_STATE ) {
