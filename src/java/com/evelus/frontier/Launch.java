@@ -11,6 +11,7 @@ import com.evelus.frontier.game.items.ItemLoader;
 import com.evelus.frontier.io.ArchiveManager;
 import com.evelus.frontier.game.regions.RegionHandler;
 import com.evelus.frontier.game.widgets.WidgetLoader;
+import com.evelus.frontier.plugin.PluginLoader;
 
 /**
  * Evelus Development
@@ -38,6 +39,7 @@ public final class Launch {
         ArchiveManager.initialize( Constants.ARCHIVE_DATABASE_PATH );
         ArchiveManager.loadAll( );
         RegionHandler.loadConfig( Constants.REGION_CONFIG_PATH );
+        PluginLoader.load( Constants.PLUGIN_PATH );
         Server.setState( state );
     }
 }

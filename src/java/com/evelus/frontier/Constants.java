@@ -47,6 +47,11 @@ public final class Constants {
      * The path to the widget configuration.
      */
     public static final String WIDGET_CONFIG_PATH = "./bin/widgetconfig.dat";
+    
+    /**
+     * The path to the plugins.
+     */
+    public static final String PLUGIN_PATH = "./bin/plugins/";
 
     /**
      * The option to have ISAAC active on the server.
