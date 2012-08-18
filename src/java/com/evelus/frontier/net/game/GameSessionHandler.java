@@ -8,8 +8,13 @@
 package com.evelus.frontier.net.game;
 
 import com.evelus.frontier.game.World;
+import com.evelus.frontier.game.items.GameItem;
+import com.evelus.frontier.game.items.ItemContainer;
+import com.evelus.frontier.game.items.ItemDefinition;
+import com.evelus.frontier.game.items.ItemLoader;
 import com.evelus.frontier.game.model.Player;
 import com.evelus.frontier.net.game.codec.FrameEncoder;
+import com.evelus.frontier.net.game.frames.SendItemsFrame;
 import com.evelus.frontier.net.game.frames.SendMessageFrame;
 import com.evelus.frontier.net.game.frames.SetTabWidgetFrame;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -36,6 +41,51 @@ public class GameSessionHandler implements SessionHandler {
      * The player for this session handler.
      */
     private Player player;
+    
+    /**
+     * Handles a command sent from the client.
+     * 
+     * @param str The command string.
+     */
+    public void handleCommand( String str )
+    {
+        String[] args = str.split(" ");
+        try {
+            if( args[0].equals("item") ) {
+                int id = Integer.parseInt( args[1] );
+                ItemDefinition definition = ItemLoader.getDefinition( id );
+                if( definition == null ) {
+                    player.sendFrame( new SendMessageFrame( "No such item exists." ) );
+                    return;
+                }
+                int amount = 1;
+                if( args.length > 2 ) {
+                    amount = Integer.parseInt( args[2] );
+                }
+                ItemContainer container = player.getItemHandler().getContainer( 0 );
+                if( definition.getStackable() ) {
+                    GameItem gameItem = new GameItem( id , amount );
+                    if( !container.addItem(gameItem, true) ) {
+                        player.sendFrame( new SendMessageFrame( "Not enough room in your inventory to complete this action." ) );
+                        return;
+                    }
+                } else {
+                    while( amount-- > 0 ) {
+                        GameItem gameItem = new GameItem( id );
+                        if( !container.addItem(gameItem, false) ) {
+                            player.sendFrame( new SendMessageFrame( "Not enough room in your inventory to complete this action." ) );
+                            return;
+                        }
+                    }
+                }
+                player.sendFrame( new SendItemsFrame( 149 , 0 , container ));
+            } else {
+                player.sendFrame( new SendMessageFrame( "No such command." ) );
+            }
+        } catch( Throwable t ) {
+            player.sendFrame( new SendMessageFrame( "Error in executing the command." ) );
+        }
+    }
     
     /**
      * Sends all the initial login information.

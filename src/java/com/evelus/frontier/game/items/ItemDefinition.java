@@ -35,6 +35,11 @@ public final class ItemDefinition {
      * The name of the item.
      */
     private String name;
+    
+    /**
+     * Flag for if the item is stackable.
+     */
+    private boolean stackable;
 
     /**
      * Gets the name of this item definition.
@@ -44,6 +49,16 @@ public final class ItemDefinition {
     public String getName( )
     {
         return name;
+    }
+    
+    /**
+     * Gets if the item is stackable.
+     * 
+     * @return If the item is stackable.
+     */
+    public boolean getStackable( )
+    {
+        return stackable;
     }
 
     /**
@@ -56,6 +71,9 @@ public final class ItemDefinition {
     {
         if( opcode == 1 ) {
             name = byteBuffer.getJstr();
+        }
+        if( opcode == 2) {
+            stackable = true;
         }
     }
 }

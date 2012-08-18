@@ -22,7 +22,7 @@ public final class ItemHandler {
      */
     public ItemHandler ( ) 
     { 
-        containers = new ItemContainer[ WidgetLoader.getMaximumContainer() ];
+        containers = new ItemContainer[ WidgetLoader.getMaximumContainer() + 1 ];
         for( WidgetDefinition definition : WidgetLoader.getContainers( ) ) {
             containers[ definition.getContainerId() ] = new ItemContainer( definition.getSize() );
         }

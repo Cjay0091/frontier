@@ -39,7 +39,7 @@ public final class Launch {
         ArchiveManager.initialize( Constants.ARCHIVE_DATABASE_PATH );
         ArchiveManager.loadAll( );
         RegionHandler.loadConfig( Constants.REGION_CONFIG_PATH );
-        PluginLoader.load( Constants.PLUGIN_PATH );
+        PluginLoader.getInstance().load( Constants.PLUGIN_PATH );
         Server.setState( state );
     }
 }

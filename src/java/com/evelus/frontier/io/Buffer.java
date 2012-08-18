@@ -103,6 +103,16 @@ public final class Buffer {
     {
         return payload[ offset++ ] & 0xFF;
     }
+    
+    /**
+     * Puts a byte type a into the payload.
+     *
+     * @param value The value of the byte to put.
+     */
+    public void putByteA( int value )
+    {
+        payload[ offset++ ] = (byte) (-value);
+    }
 
     /**
      * Puts a byte plus 128 into the payload.

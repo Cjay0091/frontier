@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class PluginLoader {
+public final class PluginLoader implements PluginController {
     
     /**
      * The logger instance for this class.
@@ -28,29 +28,37 @@ public final class PluginLoader {
     private final static Logger logger = Logger.getLogger( PluginLoader.class.getSimpleName() );
     
     /**
-     * Prevent construction;
+     * The instance of this class.
      */
-    private PluginLoader ( ) { }
+    private static PluginLoader instance;
+    
+    /**
+     * Construct a new {@link PluginLoader};
+     */
+    private PluginLoader ( ) 
+    { 
+        classLoaders = new HashMap<String, URLClassLoader>();
+        plugins = new HashMap<String, Plugin>();
+    }
     
     /**
      * The url class loaders for each of the plugin files.
      */
-    private static Map<String, URLClassLoader> classLoaders;
+    private Map<String, URLClassLoader> classLoaders;
     
     /**
      * The plugins loaded into memory.
      */
-    private static Map<String, Plugin> plugins;
+    private Map<String, Plugin> plugins;
     
     /**
      * Loads all the plugins within the path.
      * 
      * @param filePath The file path to load the plugins from.
      */
-    public static void load( String filePath )
+    public void load( String filePath )
     {
-        classLoaders = new HashMap<String, URLClassLoader>();
-        plugins = new HashMap<String, Plugin>();
+        
         File path = new File( filePath );
         int loadedPlugins = 0;
         for( File file : path.listFiles() ) {
@@ -64,15 +72,15 @@ public final class PluginLoader {
                 logger.log( Level.INFO , "Failed to load plugin [name=" + file.getName() + "]" );
             }
         }
-        logger.log( Level.INFO , "Successfully loaded " + loadedPlugins + "");
+        logger.log( Level.INFO , "Successfully loaded " + loadedPlugins + " plugins");
     }
     
     /**
-     * Loads a plugin.
+     * Loads a plugin into memory.
      * 
      * @param filePath The file path of the plugin to load.
      */
-    private static void loadPlugin( String filePath ) throws Throwable
+    private void loadPlugin( String filePath ) throws Throwable
     {
         URLClassLoader classLoader = classLoaders.get( filePath );
         if( classLoader == null ) {
@@ -85,5 +93,18 @@ public final class PluginLoader {
         Plugin plugin = pluginClass.newInstance();
         plugin.onLoad();
         plugins.put( plugin.getName() , plugin);
+    }
+    
+    /**
+     * Gets the instance of this class.
+     * 
+     * @return The instance.
+     */
+    public static PluginLoader getInstance( )
+    {
+        if( instance == null ) {
+            instance = new PluginLoader( );
+        }
+        return instance;
     }
 }

@@ -41,6 +41,11 @@ public final class ItemSetup {
          * The name of this item.
          */
         private String name;
+        
+        /**
+         * The flag for if this item is stackable.
+         */
+        private boolean stackable;
 
         /**
          * Constructs a new {@link ItemDefinition};
@@ -133,6 +138,7 @@ public final class ItemSetup {
                 ItemDefinition definition = definitions[ counter++ ] = new ItemDefinition();
                 definition.id = results.getInt("item_id");
                 definition.name = results.getString("name");
+                definition.stackable = results.getInt("is_stackable") == 1;
             }
         } finally {
             statement.close();
@@ -150,6 +156,9 @@ public final class ItemSetup {
         writeWord( os , itemDefinition.id );
         os.write(1);
         writeStr( os , itemDefinition.name );
+        if( itemDefinition.stackable ) {
+            os.write( 2 );
+        }
         os.write(0);
     }
 

@@ -7,6 +7,8 @@
 
 package com.evelus.frontier.net.game;
 
+import com.evelus.frontier.io.Buffer;
+
 /**
  * Evelus Development
  * Created by Hadyn Richard
@@ -31,6 +33,12 @@ public final class GameFrameDecoder implements FrameDecoder {
     @Override
     public void decode( Session session , IncomingFrame incomingFrame ) 
     {
-        
+        int id = incomingFrame.getId();
+        Buffer buffer = new Buffer( incomingFrame.getPayload() );
+        switch( id ) {
+            case 174:
+                handler.handleCommand( buffer.getJstr() );
+                return;
+        }
     }
 }

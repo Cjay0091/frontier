@@ -9,7 +9,9 @@ package com.evelus.frontier.game.model;
 
 import com.evelus.frontier.Constants;
 import com.evelus.frontier.game.model.mob.PlayerUpdateBlock;
+import com.evelus.frontier.game.model.player.ItemHandler;
 import com.evelus.frontier.game.update.SceneList;
+import com.evelus.frontier.net.game.OutgoingFrame;
 import com.evelus.frontier.net.game.Session;
 import com.evelus.frontier.net.game.frames.PlayerUpdateFrame;
 import com.evelus.frontier.net.game.frames.RebuildMapFrame;
@@ -51,6 +53,11 @@ public class Player extends Mob {
      * The player update frame for this player.
      */
     private PlayerUpdateFrame playerUpdateFrame;
+    
+    /**
+     * The item handler for this player.
+     */
+    private ItemHandler itemHandler;
 
     /**
      * The updated map sector x coordinate.
@@ -70,6 +77,7 @@ public class Player extends Mob {
         updateBlock = new PlayerUpdateBlock( );
         playerSceneList = new SceneList( SceneList.PLAYERS_TYPE , Constants.ENTITIES_IN_VIEW , Constants.AMOUNT_PLAYERS );
         playerUpdateFrame = new PlayerUpdateFrame( this , playerSceneList );
+        itemHandler = new ItemHandler( );
     }
 
     @Override
@@ -129,6 +137,26 @@ public class Player extends Mob {
     {
         Channel channel = session.getChannel();
         channel.write( playerUpdateFrame );
+    }
+    
+    /**
+     * Gets the item handler for this player.
+     * 
+     * @return The item handler.
+     */
+    public ItemHandler getItemHandler( )
+    {
+        return itemHandler;
+    }
+    
+    /**
+     * Sends a frame to the client of this player.
+     * 
+     * @param frame The frame to send to the client.
+     */
+    public void sendFrame( OutgoingFrame frame )
+    {
+        session.getChannel().write( frame );
     }
     
     /**
