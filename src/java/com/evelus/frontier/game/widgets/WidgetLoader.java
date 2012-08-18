@@ -37,7 +37,12 @@ public final class WidgetLoader implements WidgetController {
     /**
      * Construct a new {@link WidgetLoader};
      */
-    private WidgetLoader ( ) { }
+    private WidgetLoader ( ) 
+    {
+        lookupMap = new HashMap<Integer, Integer>();
+        maximumContainerId = -1;
+        maximumButtonId = -1;
+    }
 
     /**
      * The definitions for this widget loader.
@@ -55,6 +60,11 @@ public final class WidgetLoader implements WidgetController {
     private int maximumContainerId;
     
     /**
+     * The id of the maximum button.
+     */
+    private int maximumButtonId;
+    
+    /**
      * The container widgets.
      */
     private WidgetDefinition[] containers;
@@ -69,7 +79,8 @@ public final class WidgetLoader implements WidgetController {
      *
      * @param filePath  The file path to the widget configuration.
      */
-    public void loadConfig( String filePath ) {
+    public void loadConfig( String filePath ) 
+    {
         try {
             DataInputStream dis = new DataInputStream( new FileInputStream(filePath) );
             Buffer buffer = new Buffer( dis.available() );
@@ -77,10 +88,8 @@ public final class WidgetLoader implements WidgetController {
             int amountDefs = buffer.getUword();
             int maximumDef = buffer.getUword();
             definitions = new WidgetDefinition[ maximumDef + 1 ];
-            lookupMap = new HashMap<Integer, Integer>();
-            maximumContainerId = -1;
             int amountContainers = 0;
-            int amountButtons = 0;
+            int amountButtons = 0;           
             for( int i = 0 ; i < amountDefs ; i++ ) {
                 int id = buffer.getUword();
                 WidgetDefinition definition = definitions[ id ] = new WidgetDefinition( id );
@@ -96,10 +105,10 @@ public final class WidgetLoader implements WidgetController {
                 }
                 if( definition.getType() == WidgetDefinition.BUTTON_TYPE ) {
                     int containerId = definition.getButtonId();
-                    if( containerId > maximumContainerId ) {
-                        maximumContainerId = containerId;
+                    if( containerId > maximumButtonId ) {
+                        maximumButtonId = containerId;
                     }
-                    amountContainers++;
+                    amountButtons++;
                 }
             }
             containers = new WidgetDefinition[ amountContainers ];
@@ -111,6 +120,7 @@ public final class WidgetLoader implements WidgetController {
                 }
                 containers[ counter++ ] = definition;
             }
+            buttonListeners = new ButtonListener[ maximumButtonId + 1 ];
             logger.log( Level.INFO , "Finished loading " + amountDefs + " widget definitions" );
             dis.close();
         } catch( IOException ioex ) {
@@ -135,6 +145,56 @@ public final class WidgetLoader implements WidgetController {
     public WidgetDefinition[] getContainers( )
     {
         return containers;
+    }
+    
+    /**
+     * Registers a button listener to this widget loader.
+     * 
+     * @param listener The listener to register.
+     * @param id The id of the listener to register. 
+     */
+    public void register( ButtonListener listener, int id ) 
+    {
+        buttonListeners[ id ] = listener;
+    }
+    
+    /**
+     * Gets a button listener.
+     * 
+     * @param id The id of the button listener to get.
+     * @return The button listener.
+     */
+    public ButtonListener getButtonListener( int id )
+    {
+        return buttonListeners[ id ];
+    }
+    
+    /**
+     * Looks up a widget definition from its hash.
+     * 
+     * @param hash The hash of the widget definition to lookup.
+     * @return The id of the definition.
+     */
+    public int lookup( int hash )
+    {
+        if( !lookupMap.containsKey(hash) ) {
+            return -1;
+        }
+        return lookupMap.get( hash );
+    }
+    
+    /**
+     * Gets a widget definition.
+     * 
+     * @param id The id of the definition to get.
+     * @return The definition.
+     */
+    public WidgetDefinition getDefinition( int id )
+    {
+        if( id < 0 || id > definitions.length ) {
+            return null;
+        }
+        return definitions[ id ];
     }
     
     /**

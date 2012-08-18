@@ -36,6 +36,7 @@ public final class WidgetDefinition {
         type = -1;
         containerId = -1;
         containerSize = -1;
+        buttonId = -1;
     }
     
     /**
@@ -59,6 +60,11 @@ public final class WidgetDefinition {
     private int containerSize;
     
     /**
+     * The button id of this widget.
+     */
+    private int buttonId;
+    
+    /**
      * Loads the data for this definition.
      * 
      * @param buffer The buffer to load the data from.
@@ -71,7 +77,7 @@ public final class WidgetDefinition {
             containerSize = buffer.getUword();
         }
         if( type == BUTTON_TYPE ) {
-            
+            buttonId = buffer.getUword();
         }
     }
     
@@ -103,5 +109,15 @@ public final class WidgetDefinition {
     public int getContainerSize( )
     {
         return containerSize;
+    }
+    
+    /**
+     * Gets the button id of this widget.
+     * 
+     * @return The button id.
+     */
+    public int getButtonId( )
+    {
+        return buttonId;
     }
 }

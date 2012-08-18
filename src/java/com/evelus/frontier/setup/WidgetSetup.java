@@ -62,7 +62,12 @@ public final class WidgetSetup {
         /**
          * The size of this widget.
          */
-        private int size;
+        private int containerSize;
+        
+        /**
+         * The id of the button for this widget.
+         */
+        private int buttonId;
 
         /**
          * Constructs a new {@link Definition};
@@ -72,7 +77,7 @@ public final class WidgetSetup {
             id = -1;
             hash = -1;
             type = -1;
-            size = -1;
+            containerSize = -1;
         }
     }
     
@@ -160,7 +165,10 @@ public final class WidgetSetup {
                 int type = definition.type = results.getInt("type");
                 if( type == WidgetDefinition.CONTAINER_TYPE ) {
                     definition.containerId = results.getInt("container_id");
-                    definition.size = results.getInt("container_size");
+                    definition.containerSize = results.getInt("container_size");
+                }
+                if( type == WidgetDefinition.BUTTON_TYPE ) {
+                    definition.buttonId = results.getInt("button_id");
                 }
             }
         } finally {
@@ -179,9 +187,14 @@ public final class WidgetSetup {
         writeWord( os , definition.id );
         writeDword( os , definition.hash );
         os.write( definition.type );
+        
         if( definition.type == WidgetDefinition.CONTAINER_TYPE ) {
             os.write( definition.containerId );
-            writeWord( os , definition.size );
+            writeWord( os , definition.containerSize );
+        }
+        
+        if( definition.type == WidgetDefinition.BUTTON_TYPE ) {
+            writeWord( os , definition.buttonId );
         }
     }
 

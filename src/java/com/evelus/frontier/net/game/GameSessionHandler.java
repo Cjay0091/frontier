@@ -13,6 +13,9 @@ import com.evelus.frontier.game.items.ItemContainer;
 import com.evelus.frontier.game.items.ItemDefinition;
 import com.evelus.frontier.game.items.ItemLoader;
 import com.evelus.frontier.game.model.GamePlayer;
+import com.evelus.frontier.game.widgets.WidgetDefinition;
+import com.evelus.frontier.game.widgets.WidgetLoader;
+import com.evelus.frontier.listeners.widgets.ButtonListener;
 import com.evelus.frontier.net.game.codec.FrameEncoder;
 import com.evelus.frontier.net.game.frames.SendItemsFrame;
 import com.evelus.frontier.net.game.frames.SendMessageFrame;
@@ -84,6 +87,29 @@ public class GameSessionHandler implements SessionHandler {
             }
         } catch( Throwable t ) {
             player.sendFrame( new SendMessageFrame( "Error in executing the command." ) );
+        }
+    }
+    
+    /**
+     * Handles when a button is clicked.
+     * 
+     * @param hash The hash of the button clicked.
+     */
+    public void handleClickButton( int hash )
+    {
+        int id = WidgetLoader.getInstance().lookup( hash );
+        if( id == -1 ) {
+            System.out.println(":(");
+            return;
+        }
+        WidgetDefinition definition = WidgetLoader.getInstance().getDefinition( id );
+        if( definition.getType() != WidgetDefinition.BUTTON_TYPE ) {
+            System.out.println("<_<");
+            return;
+        }
+        ButtonListener listener = WidgetLoader.getInstance().getButtonListener( definition.getButtonId() );
+        if( listener != null ) {
+            listener.onActivate( player );
         }
     }
     
