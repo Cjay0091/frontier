@@ -7,6 +7,7 @@
 
 package com.evelus.frontier.net.game;
 
+import com.evelus.frontier.events.widgets.ButtonEvent;
 import com.evelus.frontier.game.GameWorld;
 import com.evelus.frontier.game.items.GameItem;
 import com.evelus.frontier.game.items.ItemContainer;
@@ -19,7 +20,8 @@ import com.evelus.frontier.listeners.widgets.ButtonListener;
 import com.evelus.frontier.net.game.codec.FrameEncoder;
 import com.evelus.frontier.net.game.frames.SendItemsFrame;
 import com.evelus.frontier.net.game.frames.SendMessageFrame;
-import com.evelus.frontier.net.game.frames.SetTabWidgetFrame;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
@@ -29,6 +31,11 @@ import org.jboss.netty.channel.Channel;
  * Created by Hadyn Richard
  */
 public class GameSessionHandler implements SessionHandler {
+
+    /**
+     * The logger instance for this class.
+     */
+    private static final Logger logger = Logger.getLogger( GameSessionHandler.class.getSimpleName() );
     
     /**
      * Constructs a new {@link GameSessionHandler};
@@ -97,19 +104,22 @@ public class GameSessionHandler implements SessionHandler {
      */
     public void handleClickButton( int hash )
     {
+        if( !player.getWidgetHandler().widgetOpen( hash >> 16 ) ) {
+            return;
+        }
         int id = WidgetLoader.getInstance().lookup( hash );
         if( id == -1 ) {
-            System.out.println(":(");
             return;
         }
         WidgetDefinition definition = WidgetLoader.getInstance().getDefinition( id );
         if( definition.getType() != WidgetDefinition.BUTTON_TYPE ) {
-            System.out.println("<_<");
+            logger.log( Level.INFO , "Specified widget is not a button [hash=" + hash + "]" );
             return;
         }
+        ButtonEvent event = new ButtonEvent( player );
         ButtonListener listener = WidgetLoader.getInstance().getButtonListener( definition.getButtonId() );
         if( listener != null ) {
-            listener.onActivate( player );
+            listener.onActivate( event );
         }
     }
     

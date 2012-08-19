@@ -37,7 +37,7 @@ public final class WidgetLoader implements WidgetController {
     /**
      * Construct a new {@link WidgetLoader};
      */
-    private WidgetLoader ( ) 
+    private WidgetLoader ( )
     {
         lookupMap = new HashMap<Integer, Integer>();
         maximumContainerId = -1;

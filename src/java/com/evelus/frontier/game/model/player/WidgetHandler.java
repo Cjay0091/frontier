@@ -52,6 +52,22 @@ public final class WidgetHandler {
             tabWidgetIds[ i ] = DEFAULT_TAB_WIDGETS[ i ];
         }
     }
+
+    /**
+     * Gets if a widget is currently open.
+     *
+     * @param parentId The parent id of the widget to see if its open.
+     * @return If the widget is currently open on the clients screen.
+     */
+    public boolean widgetOpen( int parentId )
+    {
+        for( int i = 0 ; i < 15 ; i++ ) {
+            if( tabWidgetIds[ i ] == parentId ) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     /**
      * Update all the tabs.

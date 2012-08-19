@@ -10,6 +10,8 @@ package com.evelus.frontier.game.model;
 import com.evelus.frontier.Constants;
 import com.evelus.frontier.game.model.mob.PlayerUpdateBlock;
 import com.evelus.frontier.game.model.player.ItemHandler;
+import com.evelus.frontier.game.model.player.ServerBindings;
+import com.evelus.frontier.game.model.player.ServerBindingsImpl;
 import com.evelus.frontier.game.model.player.WidgetHandler;
 import com.evelus.frontier.game.update.SceneList;
 import com.evelus.frontier.net.game.OutgoingFrame;
@@ -66,6 +68,11 @@ public class GamePlayer extends GameMob implements Player {
     private WidgetHandler widgetHandler;
 
     /**
+     * The server bindings for this player.
+     */
+    private ServerBindingsImpl serverBindings;
+
+    /**
      * The updated map sector x coordinate.
      */
     private int updatedSectorX;
@@ -85,6 +92,7 @@ public class GamePlayer extends GameMob implements Player {
         playerUpdateFrame = new PlayerUpdateFrame( this , playerSceneList );
         itemHandler = new ItemHandler( );
         widgetHandler = new WidgetHandler( this );
+        serverBindings = new ServerBindingsImpl( 500 );
     }
 
     @Override
@@ -164,6 +172,12 @@ public class GamePlayer extends GameMob implements Player {
     public WidgetHandler getWidgetHandler( )
     {
         return widgetHandler;
+    }
+
+    @Override
+    public ServerBindings getServerBindings( )
+    {
+        return serverBindings;
     }
     
     /**
