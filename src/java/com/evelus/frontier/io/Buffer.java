@@ -247,6 +247,20 @@ public final class Buffer {
     }
 
     /**
+     * Puts a little endian dword value into the payload.
+     *
+     * @param value The value to put.
+     */
+    public void putDwordLe( int value )
+    {
+        payload[ offset++ ] = (byte)  value;
+        payload[ offset++ ] = (byte) (value >> 8);
+        payload[ offset++ ] = (byte) (value >> 16);
+        payload[ offset++ ] = (byte) (value >> 24);
+
+    }
+
+    /**
      * Gets a dword type a value from the payload.
      *
      * @return The dword value.

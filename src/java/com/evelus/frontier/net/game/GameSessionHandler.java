@@ -20,6 +20,8 @@ import com.evelus.frontier.game.widgets.WidgetLoader;
 import com.evelus.frontier.listeners.items.ItemListener;
 import com.evelus.frontier.listeners.widgets.ButtonListener;
 import com.evelus.frontier.net.game.codec.FrameEncoder;
+import com.evelus.frontier.net.game.frames.DisplayTabOverlayFrame;
+import com.evelus.frontier.net.game.frames.DisplayWidgetFrame;
 import com.evelus.frontier.net.game.frames.SendItemsFrame;
 import com.evelus.frontier.net.game.frames.SendMessageFrame;
 import java.util.logging.Level;
@@ -182,6 +184,7 @@ public class GameSessionHandler implements SessionHandler {
         player.getWidgetHandler().updateTabs( );
         player.getSkillHandler().updateSkills();
         player.sendMessage( "Welcome to Frontier" );
+        player.sendFrame( new DisplayWidgetFrame( 0 ) );
     }
 
     @Override

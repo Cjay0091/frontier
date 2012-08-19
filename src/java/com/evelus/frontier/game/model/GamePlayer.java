@@ -20,6 +20,7 @@ import com.evelus.frontier.net.game.Session;
 import com.evelus.frontier.net.game.frames.PlayerUpdateFrame;
 import com.evelus.frontier.net.game.frames.RebuildMapFrame;
 import com.evelus.frontier.net.game.frames.SendMessageFrame;
+import com.evelus.frontier.net.game.frames.UpdateTextFrame;
 import org.jboss.netty.channel.Channel;
 
 /**
@@ -199,9 +200,9 @@ public class GamePlayer extends GameMob implements Player {
     }
 
     @Override
-    public void setText(int i, int i1, String string)
+    public void setText( int parentId , int childId , String text )
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        session.getChannel().write( new UpdateTextFrame( parentId  , childId  , text  ) );
     }
 
     @Override
