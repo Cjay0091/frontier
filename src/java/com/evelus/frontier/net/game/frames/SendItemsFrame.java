@@ -17,18 +17,29 @@ import com.evelus.frontier.net.game.OutgoingFrame;
  * Created by Hadyn Richard
  */
 public final class SendItemsFrame extends OutgoingFrame {
-    
+
     /**
      * Constructs a new {@link SendItemsFrame};
      * 
      * @param parentId The parent widget id.
      * @param childId The child widget id.
      */
-    public SendItemsFrame ( int parentId , int childId ,ItemContainer itemContainer ) 
+    public SendItemsFrame ( int parentId , int childId , ItemContainer itemContainer )
     { 
+        this( parentId << 16 | childId , itemContainer );
+    }
+
+    /**
+     * Constructs a new {@link SendItemsFrame};
+     *
+     * @param parentId The parent widget id.
+     * @param childId The child widget id.
+     */
+    public SendItemsFrame ( int hash , ItemContainer itemContainer )
+    {
         super( 228 , OutgoingFrame.WORD_SIZE );
         this.itemContainer = itemContainer;
-        hash = parentId << 16 | childId;
+        this.hash = hash;
     }
     
     /**

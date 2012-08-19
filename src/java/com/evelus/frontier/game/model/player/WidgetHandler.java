@@ -94,6 +94,7 @@ public final class WidgetHandler {
         for( int i = 0 ; i < 15 ; i++) {
             DEFAULT_TAB_WIDGETS[ i ] = -1;
         }
+        DEFAULT_TAB_WIDGETS[  1 ] = 320;
         DEFAULT_TAB_WIDGETS[  3 ] = 149;
         DEFAULT_TAB_WIDGETS[ 10 ] = 182;
     }

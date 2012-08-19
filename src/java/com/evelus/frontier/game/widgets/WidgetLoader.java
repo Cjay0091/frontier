@@ -92,8 +92,8 @@ public final class WidgetLoader implements WidgetController {
             int amountButtons = 0;           
             for( int i = 0 ; i < amountDefs ; i++ ) {
                 int id = buffer.getUword();
-                WidgetDefinition definition = definitions[ id ] = new WidgetDefinition( id );
                 int hash = buffer.getDword();
+                WidgetDefinition definition = definitions[ id ] = new WidgetDefinition( id , hash );
                 lookupMap.put( hash , id );
                 definition.load( buffer );
                 if( definition.getType() == WidgetDefinition.CONTAINER_TYPE ) {
@@ -181,6 +181,20 @@ public final class WidgetLoader implements WidgetController {
             return -1;
         }
         return lookupMap.get( hash );
+    }
+
+    /**
+     * Gets the definition for a widget container.
+     *
+     * @param id The id of the container to get the definition for.
+     * @return The definition.
+     */
+    public WidgetDefinition getContainer( int id )
+    {
+        if( id < 0 || id > containers.length ) {
+            return null;
+        }
+        return containers[ id ];
     }
     
     /**

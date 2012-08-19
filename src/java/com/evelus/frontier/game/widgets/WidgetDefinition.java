@@ -29,10 +29,12 @@ public final class WidgetDefinition {
      * Constructs a new {@link WidgetDefinition};
      *
      * @param id The id of the widget.
+     * @param hash The hash of the widget.
      */
-    public WidgetDefinition( int id ) 
+    public WidgetDefinition( int id , int hash )
     {
         this.id = id;
+        this.hash = hash;
         type = -1;
         containerId = -1;
         containerSize = -1;
@@ -43,6 +45,11 @@ public final class WidgetDefinition {
      * The id of this widget.
      */
     private int id;
+
+    /**
+     * The hash of this widget.
+     */
+    private int hash;
     
     /**
      * The type of this widget.
@@ -79,6 +86,16 @@ public final class WidgetDefinition {
         if( type == BUTTON_TYPE ) {
             buttonId = buffer.getUword();
         }
+    }
+
+    /**
+     * Gets the hash of this widget.
+     *
+     * @return The hash.
+     */
+    public int getHash( )
+    {
+        return hash;
     }
     
     /**

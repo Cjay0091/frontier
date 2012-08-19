@@ -178,7 +178,9 @@ public class GameSessionHandler implements SessionHandler {
         channel.write( channelBuffer );
         channel.getPipeline().addFirst( "frameencoder", new FrameEncoder( player.getSession() ) );
         player.rebuildMap( );
+        player.getItemHandler().updateContainers( );
         player.getWidgetHandler().updateTabs( );
+        player.getSkillHandler().updateSkills();
         player.sendMessage( "Welcome to Frontier" );
     }
 

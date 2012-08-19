@@ -261,6 +261,19 @@ public final class Buffer {
     }
 
     /**
+     * Puts a dword type b value into the payload.
+     *
+     * @param value The value to put.
+     */
+    public void putDwordB( int value )
+    {
+        payload[ offset++ ] = (byte) (value >> 16);
+        payload[ offset++ ] = (byte) (value >> 24);
+        payload[ offset++ ] = (byte)  value;
+        payload[ offset++ ] = (byte) (value >> 8);
+    }
+
+    /**
      * Gets a qword value from the payload.
      *
      * @return The qword value.
