@@ -206,6 +206,24 @@ public class GamePlayer extends GameMob implements Player {
     }
 
     @Override
+    public void displayWindow( int id )
+    {
+        widgetHandler.setWindow( id );
+    }
+
+    @Override
+    public void displayOverlay(int id)
+    {
+        widgetHandler.setOverlay( id );
+    }
+
+    @Override
+    public void closeDisplayedWidgets()
+    {
+        widgetHandler.reset( );
+    }
+
+    @Override
     public ServerBindings getServerBindings( )
     {
         return serverBindings;

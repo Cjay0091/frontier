@@ -14,14 +14,14 @@ import com.evelus.frontier.net.game.OutgoingFrame;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class DisplayWidgetFrame extends OutgoingFrame {
+public final class DisplayOverlayFrame extends OutgoingFrame {
 
     /**
      * Constructs a new {@link DisplayWidgetFrame};
      */
-    public DisplayWidgetFrame ( int parentId )
+    public DisplayOverlayFrame ( int parentId )
     {
-        super( 160 , OutgoingFrame.STATIC_SIZE );
+        super( 219 , OutgoingFrame.STATIC_SIZE );
         this.parentId = parentId;
     }
 
@@ -36,3 +36,4 @@ public final class DisplayWidgetFrame extends OutgoingFrame {
         buffer.putWord128( parentId );
     }
 }
+

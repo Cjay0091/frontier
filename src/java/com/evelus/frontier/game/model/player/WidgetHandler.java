@@ -8,6 +8,9 @@
 package com.evelus.frontier.game.model.player;
 
 import com.evelus.frontier.game.model.GamePlayer;
+import com.evelus.frontier.net.game.frames.DisplayOverlayFrame;
+import com.evelus.frontier.net.game.frames.DisplayWindowFrame;
+import com.evelus.frontier.net.game.frames.CloseWidgetsFrame;
 import com.evelus.frontier.net.game.frames.SetTabWidgetFrame;
 
 /**
@@ -29,6 +32,8 @@ public final class WidgetHandler {
     public WidgetHandler ( GamePlayer player ) 
     { 
         this.player = player;
+        windowId = -1;
+        overlayId = -1;
         initialize( );
     }
     
@@ -36,6 +41,16 @@ public final class WidgetHandler {
      * The player for this widget handler.
      */
     private GamePlayer player;
+
+    /**
+     * The currently active widget window parent id.
+     */
+    private int windowId;
+
+    /**
+     * The currently active widget overlay parent id.
+     */
+    private int overlayId;
     
     /**
      * The widget ids for all the tabs.
@@ -54,6 +69,42 @@ public final class WidgetHandler {
     }
 
     /**
+     * Sets the currently open window.
+     *
+     * @param id The window widget id.
+     */
+    public void setWindow( int id )
+    {
+        if( windowId != id ) {
+            windowId = id;
+            player.sendFrame( new DisplayWindowFrame( id ) );
+        }
+    }
+
+    /**
+     * Sets the current overlay.
+     *
+     * @param id The overlay widget id.
+     */
+    public void setOverlay( int id )
+    {
+        if( overlayId != id ) {
+            overlayId = id;
+            player.sendFrame( new DisplayOverlayFrame( id ) );
+        }
+    }
+
+    /**
+     * Resets all the displayed widgets.
+     */
+    public void reset( )
+    {
+        windowId = -1;
+        overlayId = -1;
+        player.sendFrame( new CloseWidgetsFrame( ) );
+    }
+
+    /**
      * Gets if a widget is currently open.
      *
      * @param parentId The parent id of the widget to see if its open.
@@ -61,6 +112,12 @@ public final class WidgetHandler {
      */
     public boolean widgetOpen( int parentId )
     {
+        if( windowId == parentId ) {
+            return true;
+        }
+        if( overlayId == parentId ) {
+            return true;
+        }
         for( int i = 0 ; i < 15 ; i++ ) {
             if( tabWidgetIds[ i ] == parentId ) {
                 return true;
