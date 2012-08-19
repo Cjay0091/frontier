@@ -49,12 +49,7 @@ public final class ServerBindingsImpl implements ServerBindings {
      */
     private Map<String, Integer> stateMap;
 
-    /**
-     * Looks up the value of a state. The state is created if it does not exist.
-     *
-     * @param name The name of the state.
-     * @return The value of the state.
-     */
+    @Override
     public int lookup( String name )
     {
         State state = null;
@@ -66,12 +61,7 @@ public final class ServerBindingsImpl implements ServerBindings {
         return state.value;
     }
 
-    /**
-     * Sets the value of a state.
-     *
-     * @param name The name of the state to set its value for.
-     * @param i The value.
-     */
+    @Override
     public void set( String name , int i )
     {
         State state = null;

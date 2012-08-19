@@ -18,6 +18,7 @@ import com.evelus.frontier.net.game.OutgoingFrame;
 import com.evelus.frontier.net.game.Session;
 import com.evelus.frontier.net.game.frames.PlayerUpdateFrame;
 import com.evelus.frontier.net.game.frames.RebuildMapFrame;
+import com.evelus.frontier.net.game.frames.SendMessageFrame;
 import org.jboss.netty.channel.Channel;
 
 /**
@@ -172,6 +173,12 @@ public class GamePlayer extends GameMob implements Player {
     public WidgetHandler getWidgetHandler( )
     {
         return widgetHandler;
+    }
+
+    @Override
+    public void sendMessage( String string )
+    {
+        session.getChannel().write( new SendMessageFrame( string ) );
     }
 
     @Override

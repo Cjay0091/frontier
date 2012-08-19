@@ -76,24 +76,24 @@ public class GameSessionHandler implements SessionHandler {
                 if( definition.getStackable() ) {
                     GameItem gameItem = new GameItem( id , amount );
                     if( !container.addItem(gameItem, true) ) {
-                        player.sendFrame( new SendMessageFrame( "Not enough room in your inventory to complete this action." ) );
+                        player.sendMessage( "Not enough room in your inventory to complete this action." );
                         return;
                     }
                 } else {
                     while( amount-- > 0 ) {
                         GameItem gameItem = new GameItem( id );
                         if( !container.addItem(gameItem, false) ) {
-                            player.sendFrame( new SendMessageFrame( "Not enough room in your inventory to complete this action." ) );
+                            player.sendMessage( "Not enough room in your inventory to complete this action." );
                             return;
                         }
                     }
                 }
                 player.sendFrame( new SendItemsFrame( 149 , 0 , container ));
             } else {
-                player.sendFrame( new SendMessageFrame( "No such command." ) );
+                player.sendMessage( "No such command." );
             }
         } catch( Throwable t ) {
-            player.sendFrame( new SendMessageFrame( "Error in executing the command." ) );
+            player.sendMessage( "Error in executing the command." );
         }
     }
     
@@ -139,7 +139,7 @@ public class GameSessionHandler implements SessionHandler {
         channel.getPipeline().addFirst( "frameencoder", new FrameEncoder( player.getSession() ) );
         player.rebuildMap( );
         player.getWidgetHandler().updateTabs( );
-        channel.write( new SendMessageFrame( "Welcome to Frontier" ) );
+        player.sendMessage( "Welcome to Frontier" );
     }
 
     @Override
