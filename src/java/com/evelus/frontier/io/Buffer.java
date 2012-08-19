@@ -171,6 +171,18 @@ public final class Buffer {
         payload[ offset++ ] = (byte) (value >> 8);
         payload[ offset++ ] = (byte) (value + 128);
     }
+
+    /**
+     * Gets a word minus 128 from the payload.
+     *
+     * @return The word value.
+     */
+    public int getUword128() {
+        offset += 2;
+        return ((payload[offset - 2] & 0xFF) << 8) |
+                (payload[offset - 1] - 128 & 0xff);
+                
+    }
     
     /**
      * Puts a little endian word into the payload.
@@ -231,7 +243,21 @@ public final class Buffer {
         return (payload[offset - 4] & 0xFF) << 24 |
                (payload[offset - 3] & 0xFF) << 16 |
                (payload[offset - 2] & 0xFF) << 8  |
-                payload[offset - 1] & 0xFF;
+               (payload[offset - 1] & 0xFF);
+    }
+
+    /**
+     * Gets a dword type a value from the payload.
+     *
+     * @return The dword value.
+     */
+    public int getDwordA( )
+    {
+        offset += 4;
+        return (payload[offset - 4] & 0xFF) << 8  |
+               (payload[offset - 3] & 0xFF)       |
+               (payload[offset - 2] & 0xFF) << 24 |
+               (payload[offset - 1] & 0xFF) << 16;
     }
 
     /**

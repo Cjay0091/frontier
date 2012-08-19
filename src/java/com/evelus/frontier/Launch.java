@@ -34,7 +34,7 @@ public final class Launch {
         } else {
             throw new RuntimeException("launch mode '" + args[1] + "' not recognized.");
         }
-        ItemLoader.loadConfig( Constants.ITEM_CONFIG_PATH );
+        ItemLoader.getInstance().loadConfig( Constants.ITEM_CONFIG_PATH );
         WidgetLoader.getInstance().loadConfig( Constants.WIDGET_CONFIG_PATH );
         ArchiveManager.initialize( Constants.ARCHIVE_DATABASE_PATH );
         ArchiveManager.loadAll( );

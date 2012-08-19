@@ -182,6 +182,12 @@ public class GamePlayer extends GameMob implements Player {
     }
 
     @Override
+    public void setText(int i, int i1, String string)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
     public ServerBindings getServerBindings( )
     {
         return serverBindings;

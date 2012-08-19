@@ -36,11 +36,14 @@ public final class GameFrameDecoder implements FrameDecoder {
         int id = incomingFrame.getId();
         Buffer buffer = new Buffer( incomingFrame.getPayload() );
         switch( id ) {
-            case 174:
-                handler.handleCommand( buffer.getJstr() );
+            case 29:
+                handler.handleEquip( buffer.getDwordA() , buffer.getUword() , buffer.getUword128() );
                 return;
             case 54:
                 handler.handleClickButton( buffer.getDword() );
+                return;
+            case 174:
+                handler.handleCommand( buffer.getJstr() );
                 return;
         }
     }

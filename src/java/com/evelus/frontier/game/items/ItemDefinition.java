@@ -24,6 +24,8 @@ public final class ItemDefinition {
     {
         this.id = id;
         name = "";
+        equipmentSlot = -1;
+        listenerId = -1;
     }
 
     /**
@@ -40,6 +42,16 @@ public final class ItemDefinition {
      * Flag for if the item is stackable.
      */
     private boolean stackable;
+
+    /**
+     * The equipment slot of the item.
+     */
+    private int equipmentSlot;
+
+    /**
+     * The listener id of the item.
+     */
+    private int listenerId;
 
     /**
      * Gets the name of this item definition.
@@ -62,18 +74,44 @@ public final class ItemDefinition {
     }
 
     /**
+     * Gets the item equipment slot.
+     *
+     * @return The equipment slot.
+     */
+    public int getEquipmentSlot( )
+    {
+        return equipmentSlot;
+    }
+
+    /**
+     * Gets the listener id for this item.
+     *
+     * @return The listener id.
+     */
+    public int getListenerId( )
+    {
+        return listenerId;
+    }
+
+    /**
      * Loads a data operation for this definition.
      *
-     * @param opcode    The opcode of the operation to preform.
-     * @param jagbuffer The buffer to read the operation's data from.
+     * @param opcode The opcode of the operation to preform.
+     * @param buffer The buffer to read the operation's data from.
      */
-    public void load( int opcode , Buffer byteBuffer )
+    public void load( int opcode , Buffer buffer )
     {
         if( opcode == 1 ) {
-            name = byteBuffer.getJstr();
+            name = buffer.getJstr();
         }
-        if( opcode == 2) {
+        if( opcode == 2 ) {
             stackable = true;
+        }
+        if( opcode == 3 ) {
+            equipmentSlot = buffer.getUbyte();
+        }
+        if( opcode == 4 ) {
+            listenerId = buffer.getUword();
         }
     }
 }

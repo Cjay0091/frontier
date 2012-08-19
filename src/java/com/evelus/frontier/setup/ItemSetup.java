@@ -48,6 +48,16 @@ public final class ItemSetup {
         private boolean stackable;
 
         /**
+         * The equipment slot of this item.
+         */
+        private int equipmentSlot;
+
+        /**
+         * The id of the listener of this item.
+         */
+        private int listenerId;
+
+        /**
          * Constructs a new {@link ItemDefinition};
          */
         public ItemDefinition ( )
@@ -139,6 +149,8 @@ public final class ItemSetup {
                 definition.id = results.getInt("item_id");
                 definition.name = results.getString("name");
                 definition.stackable = results.getInt("is_stackable") == 1;
+                definition.equipmentSlot = results.getInt("equipment_slot");
+                definition.listenerId = results.getInt("listener_id");
             }
         } finally {
             statement.close();
@@ -158,6 +170,14 @@ public final class ItemSetup {
         writeStr( os , itemDefinition.name );
         if( itemDefinition.stackable ) {
             os.write( 2 );
+        }
+        if( itemDefinition.equipmentSlot != -1 ) {
+            os.write( 3 );
+            os.write( itemDefinition.equipmentSlot );
+        }
+        if( itemDefinition.listenerId != -1 ) {
+            os.write( 4 );
+            writeWord( os , itemDefinition.listenerId );
         }
         os.write(0);
     }

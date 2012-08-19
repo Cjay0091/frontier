@@ -7,6 +7,7 @@
 
 package com.evelus.frontier.net.game;
 
+import com.evelus.frontier.events.items.ItemEvent;
 import com.evelus.frontier.events.widgets.ButtonEvent;
 import com.evelus.frontier.game.GameWorld;
 import com.evelus.frontier.game.items.GameItem;
@@ -16,6 +17,7 @@ import com.evelus.frontier.game.items.ItemLoader;
 import com.evelus.frontier.game.model.GamePlayer;
 import com.evelus.frontier.game.widgets.WidgetDefinition;
 import com.evelus.frontier.game.widgets.WidgetLoader;
+import com.evelus.frontier.listeners.items.ItemListener;
 import com.evelus.frontier.listeners.widgets.ButtonListener;
 import com.evelus.frontier.net.game.codec.FrameEncoder;
 import com.evelus.frontier.net.game.frames.SendItemsFrame;
@@ -63,7 +65,7 @@ public class GameSessionHandler implements SessionHandler {
         try {
             if( args[0].equals("item") ) {
                 int id = Integer.parseInt( args[1] );
-                ItemDefinition definition = ItemLoader.getDefinition( id );
+                ItemDefinition definition = ItemLoader.getInstance().getDefinition( id );
                 if( definition == null ) {
                     player.sendFrame( new SendMessageFrame( "No such item exists." ) );
                     return;
@@ -120,6 +122,44 @@ public class GameSessionHandler implements SessionHandler {
         ButtonListener listener = WidgetLoader.getInstance().getButtonListener( definition.getButtonId() );
         if( listener != null ) {
             listener.onActivate( event );
+        }
+    }
+
+    /**
+     * Handles equipping an item.
+     *
+     * @param hash The has of the widget where the item is located.
+     * @param itemId The id of the item to equip.
+     * @param slot The slot of the item to equip.
+     */
+    public void handleEquip( int hash , int itemId , int slot )
+    {
+        if( !player.getWidgetHandler().widgetOpen( hash >> 16 ) ) {
+            return;
+        }
+
+        int id = WidgetLoader.getInstance().lookup( hash );
+        if( id == -1 ) {
+            return;
+        }
+
+        WidgetDefinition definition = WidgetLoader.getInstance().getDefinition( id );
+        if( definition.getType() != WidgetDefinition.CONTAINER_TYPE ) {
+            logger.log( Level.INFO , "Specified widget is not a container [hash=" + hash + "]" );
+            return;
+        }
+
+        ItemContainer container = player.getItemHandler().getContainer( definition.getContainerId() );
+        GameItem item = container.getItem( slot );
+        if( item == null || item.getId() != itemId ) {
+            return;
+        }
+
+        ItemDefinition itemDefinition = ItemLoader.getInstance().getDefinition( itemId );
+        ItemListener listener = ItemLoader.getInstance().getListener( itemDefinition.getListenerId() );
+        if( listener != null ) {
+            ItemEvent itemEvent = new ItemEvent( player );
+            listener.onEquip( itemEvent );
         }
     }
     

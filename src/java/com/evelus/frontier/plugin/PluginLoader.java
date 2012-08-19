@@ -7,6 +7,7 @@
 
 package com.evelus.frontier.plugin;
 
+import com.evelus.frontier.game.items.ItemLoader;
 import com.evelus.frontier.game.widgets.WidgetLoader;
 import java.io.File;
 import java.net.URL;
@@ -105,6 +106,7 @@ public final class PluginLoader implements PluginController {
         if( context == null ) {
             context = new PluginContext();
             context.provideWidgetController( WidgetLoader.getInstance() );
+            context.provideItemController( ItemLoader.getInstance() );
         }
         return context;
     }
