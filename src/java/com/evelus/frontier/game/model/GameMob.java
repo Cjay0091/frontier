@@ -69,6 +69,7 @@ public abstract class GameMob extends Entity implements Mob {
     private void initialize() {
         walkingQueue = new WalkingQueue(100);
         serverBindings = new ServerBindingsImpl(500);
+        effects = new LinkedList<EffectListener>();
     }
 
     /**
