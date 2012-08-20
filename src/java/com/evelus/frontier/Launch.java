@@ -8,9 +8,12 @@
 package com.evelus.frontier;
 
 import com.evelus.frontier.game.items.ItemLoader;
+import com.evelus.frontier.game.model.player.ItemHandler;
+import com.evelus.frontier.game.model.player.WidgetHandler;
 import com.evelus.frontier.io.ArchiveManager;
 import com.evelus.frontier.game.regions.RegionHandler;
 import com.evelus.frontier.game.widgets.WidgetLoader;
+import com.evelus.frontier.net.game.GameSessionHandler;
 import com.evelus.frontier.plugin.PluginLoader;
 
 /**
@@ -34,12 +37,19 @@ public final class Launch {
         } else {
             throw new RuntimeException("launch mode '" + args[1] + "' not recognized.");
         }
-        ItemLoader.getInstance().loadConfig( Constants.ITEM_CONFIG_PATH );
-        WidgetLoader.getInstance().loadConfig( Constants.WIDGET_CONFIG_PATH );
+        ItemLoader itemLoader = new ItemLoader();
+        itemLoader.loadConfig( Constants.ITEM_CONFIG_PATH );
+        WidgetLoader widgetLoader = new WidgetLoader();
+        widgetLoader.loadConfig( Constants.WIDGET_CONFIG_PATH );
+        WidgetHandler.setWidgetLoader( widgetLoader );
+        ItemHandler.setWidgetLoader( widgetLoader );
+        GameSessionHandler.setWidgetLoader( widgetLoader );
+        PluginLoader pluginLoader = new PluginLoader( );
+        pluginLoader.setControllers(widgetLoader, itemLoader);
+        pluginLoader.load( Constants.PLUGIN_PATH );
+        RegionHandler.loadConfig( Constants.REGION_CONFIG_PATH );
         ArchiveManager.initialize( Constants.ARCHIVE_DATABASE_PATH );
         ArchiveManager.loadAll( );
-        RegionHandler.loadConfig( Constants.REGION_CONFIG_PATH );
-        PluginLoader.getInstance().load( Constants.PLUGIN_PATH );
         Server.setState( state );
     }
 }

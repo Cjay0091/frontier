@@ -18,6 +18,11 @@ import com.evelus.frontier.net.game.frames.SendItemsFrame;
  * Created by Hadyn Richard
  */
 public final class ItemHandler {
+
+    /**
+     * The widget loader for this item handler.
+     */
+    private static WidgetLoader widgetLoader;
     
     /**
      * Constructs a new {@link ItemHandler};
@@ -25,7 +30,7 @@ public final class ItemHandler {
     public ItemHandler ( GamePlayer gamePlayer )
     { 
 
-        WidgetDefinition[] definitions = WidgetLoader.getInstance().getContainers( );
+        WidgetDefinition[] definitions = widgetLoader.getContainers( );
         containers = new ItemContainer[ definitions.length ];
         for( int i = 0 ; i < definitions.length ; i++ ) {
             WidgetDefinition definition = definitions[ i ];
@@ -68,7 +73,7 @@ public final class ItemHandler {
         if( container == null ) {
             return;
         }
-        WidgetDefinition definition = WidgetLoader.getInstance().getContainer( id );
+        WidgetDefinition definition = widgetLoader.getContainer( id );
         gamePlayer.sendFrame( new SendItemsFrame( definition.getHash() , container ) );
     }
     
@@ -84,5 +89,15 @@ public final class ItemHandler {
             return null;
         }
         return containers[ i ];
+    }
+
+    /**
+     * Sets the widget loader.
+     *
+     * @param loader The widget loader.
+     */
+    public static void setWidgetLoader( WidgetLoader loader )
+    {
+        widgetLoader = loader;
     }
 }

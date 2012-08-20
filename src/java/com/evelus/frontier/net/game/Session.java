@@ -4,7 +4,6 @@
  * Proprietary and confidential
  * Written by Hadyn Richard (sini@evel.us), July 2012
  */
-
 package com.evelus.frontier.net.game;
 
 import com.evelus.frontier.util.ISAACCipher;
@@ -21,8 +20,7 @@ public final class Session {
      *
      * @param channel The channel for this session.
      */
-    public Session ( Channel channel )
-    {
+    public Session(Channel channel) {
         this.channel = channel;
     }
 
@@ -30,11 +28,6 @@ public final class Session {
      * The channel for this session.
      */
     private Channel channel;
-
-    /**
-     * The frame decoder for this session.
-     */
-    private FrameDecoder frameDecoder;
 
     /**
      * The handler for this session.
@@ -45,12 +38,12 @@ public final class Session {
      * The incoming isaac cipher for this session.
      */
     private ISAACCipher incomingIsaac;
-    
+
     /**
      * The outgoing isaac cipher for this session.
      */
     private ISAACCipher outgoingIsaac;
-
+    
     /**
      * The id of this session.
      */
@@ -61,29 +54,8 @@ public final class Session {
      *
      * @return The channel.
      */
-    public Channel getChannel( )
-    {
+    public Channel getChannel() {
         return channel;
-    }
-
-    /**
-     * Sets the frame decoder for this session.
-     *
-     * @param frameDecoder The frame decoder.
-     */
-    public void setFrameDecoder( FrameDecoder frameDecoder )
-    {
-        this.frameDecoder = frameDecoder;
-    }
-
-    /**
-     * Gets the frame decoder of this session.
-     *
-     * @return The frame decoder.
-     */
-    public FrameDecoder getFrameDecoder( )
-    {
-        return frameDecoder;
     }
 
     /**
@@ -91,8 +63,7 @@ public final class Session {
      *
      * @param handler The session handler.
      */
-    public void setHandler( SessionHandler handler )
-    {
+    public void setHandler(SessionHandler handler) {
         this.handler = handler;
     }
 
@@ -101,8 +72,7 @@ public final class Session {
      *
      * @param id The id value.
      */
-    public void setId( int id )
-    {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -111,20 +81,17 @@ public final class Session {
      *
      * @return The id.
      */
-    public int getId( )
-    {
+    public int getId() {
         return id;
     }
-    
-        
+
     /**
      * Initializes the incoming ISAAC.
      * 
      * @param seeds The seeds for the ISAAC.
      */
-    public void initIncomingIsaac( int[] seeds )
-    {
-        incomingIsaac = new ISAACCipher( seeds );
+    public void initIncomingIsaac(int[] seeds) {
+        incomingIsaac = new ISAACCipher(seeds);
     }
 
     /**
@@ -132,38 +99,46 @@ public final class Session {
      *
      * @return The incoming ISAAC.
      */
-    public ISAACCipher getIncomingIsaac( )
-    {
+    public ISAACCipher getIncomingIsaac() {
         return incomingIsaac;
     }
-    
+
     /**
      * Initializes the outgoing ISAAC.
      * 
      * @param seeds The seeds for the ISAAC.
      */
-    public void initOutgoingIsaac( int[] seeds )
-    {
-        outgoingIsaac = new ISAACCipher( seeds );
+    public void initOutgoingIsaac(int[] seeds) {
+        outgoingIsaac = new ISAACCipher(seeds);
     }
-    
+
     /**
      * Gets the outgoing ISAAC.
      * 
      * @return The outgoing ISAAC.
      */
-    public ISAACCipher getOutgoingIsaac( )
-    {
+    public ISAACCipher getOutgoingIsaac() {
         return outgoingIsaac;
+    }
+
+    /**
+     * Decodes an incoming frame.
+     *
+     * @param frame The incoming frame.
+     */
+    public void decodeFrame(IncomingFrame frame) {
+        if (handler != null) {
+            handler.decode(frame);
+        }
     }
 
     /**
      * Destroys this session.
      */
-    public void destroy( )
-    {
-        if( handler != null )
+    public void destroy() {
+        if (handler != null) {
             handler.destroy();
+        }
         channel.close();
     }
 }

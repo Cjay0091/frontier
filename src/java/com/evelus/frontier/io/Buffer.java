@@ -4,7 +4,6 @@
  * Proprietary and confidential
  * Written by Hadyn Richard (sini@evel.us), July 2012
  */
-
 package com.evelus.frontier.io;
 
 /**
@@ -12,7 +11,7 @@ package com.evelus.frontier.io;
  * Created by Hadyn Richard
  */
 public final class Buffer {
-    
+
     /**
      * The mask array.
      */
@@ -33,22 +32,18 @@ public final class Buffer {
      *
      * @param size The size of the buffer to create.
      */
-    public Buffer( int size )
-    {
-        payload = new byte[ size ];
+    public Buffer(int size) {
+        payload = new byte[size];
         bitOffset = -1;
     }
-
     /**
      * The byte array payload that is utilized to decode/encode values.
      */
     private byte[] payload;
-
     /**
      * The offset pointer of the payload.
      */
     private int offset;
-    
     /**
      * The current bit offset in the payload.
      */
@@ -59,8 +54,7 @@ public final class Buffer {
      *
      * @return The payload.
      */
-    public byte[] getPayload( )
-    {
+    public byte[] getPayload() {
         return payload;
     }
 
@@ -69,8 +63,7 @@ public final class Buffer {
      *
      * @param offset The offset value.
      */
-    public void setOffset( int offset )
-    {
+    public void setOffset(int offset) {
         this.offset = offset;
     }
 
@@ -79,8 +72,7 @@ public final class Buffer {
      *
      * @return The offset.
      */
-    public int getOffset( )
-    {
+    public int getOffset() {
         return offset;
     }
 
@@ -89,9 +81,17 @@ public final class Buffer {
      *
      * @param value The value of the byte to put.
      */
-    public void putByte( int value )
-    {
-        payload[ offset++ ] = (byte) value;
+    public void putByte(int value) {
+        payload[offset++] = (byte) value;
+    }
+
+    /**
+     * Gets a byte from the payload.
+     *
+     * @return The byte value.
+     */
+    public byte getByte() {
+        return payload[offset++];
     }
 
     /**
@@ -99,19 +99,26 @@ public final class Buffer {
      *
      * @return The byte value.
      */
-    public int getUbyte( )
-    {
-        return payload[ offset++ ] & 0xFF;
+    public int getUbyte() {
+        return payload[offset++] & 0xFF;
     }
-    
+
+    /**
+     * Gets an unsigned type a byte from the payload.
+     *
+     * @return The byte value.
+     */
+    public int getUbyteA() {
+        return -payload[offset++] & 0xFF;
+    }
+
     /**
      * Puts a byte type a into the payload.
      *
      * @param value The value of the byte to put.
      */
-    public void putByteA( int value )
-    {
-        payload[ offset++ ] = (byte) ( -value );
+    public void putByteA(int value) {
+        payload[offset++] = (byte) (-value);
     }
 
     /**
@@ -119,32 +126,38 @@ public final class Buffer {
      * 
      * @param value The value of the byte to put.
      */
-    public void putByte128( int value )
-    {
-        payload[ offset++ ] = (byte) (value + 128);
+    public void putByte128(int value) {
+        payload[offset++] = (byte) (value + 128);
     }
-    
+
+    /**
+     * Gets a type b byte from the payload.
+     *
+     * @return The byte value.
+     */
+    public int getByteB() {
+        return (byte) (128 - payload[offset++]);
+    }
+
     /**
      * Puts a word into the payload.
      *
      * @param value The value of the word to put.
      */
-    public void putWord( int value )
-    {
-        payload[ offset++ ] = (byte) (value >> 8);
-        payload[ offset++ ] = (byte) value;
+    public void putWord(int value) {
+        payload[offset++] = (byte) (value >> 8);
+        payload[offset++] = (byte) value;
     }
-    
+
     /**
      * Gets a word from the payload.
      * 
      * @return The word value.
      */
-    public int getWord( )
-    {
+    public int getWord() {
         offset += 2;
-        int value = (payload[ offset - 2 ] & 0xFF) << 8 | (payload[ offset - 1] & 0xFF);
-        if( value > 32767 ) {
+        int value = (payload[offset - 2] & 0xFF) << 8 | (payload[offset - 1] & 0xFF);
+        if (value > 32767) {
             value -= 65536;
         }
         return value;
@@ -155,21 +168,19 @@ public final class Buffer {
      *
      * @return The word value.
      */
-    public int getUword( )
-    {
+    public int getUword() {
         offset += 2;
-        return (payload[ offset - 2 ] & 0xFF) << 8 | (payload[ offset - 1] & 0xFF);
+        return (payload[offset - 2] & 0xFF) << 8 | (payload[offset - 1] & 0xFF);
     }
-    
+
     /**
      * Puts a word plus 128 into the payload.
      *
      * @param value The value of the word to put.
      */
-    public void putWord128( int value )
-    {
-        payload[ offset++ ] = (byte) (value >> 8);
-        payload[ offset++ ] = (byte) (value + 128);
+    public void putWord128(int value) {
+        payload[offset++] = (byte) (value >> 8);
+        payload[offset++] = (byte) (value + 128);
     }
 
     /**
@@ -179,31 +190,47 @@ public final class Buffer {
      */
     public int getUword128() {
         offset += 2;
-        return ((payload[offset - 2] & 0xFF) << 8) |
-                (payload[offset - 1] - 128 & 0xff);
-                
+        return ((payload[offset - 2] & 0xFF) << 8) + (payload[offset - 1] - 128 & 0xff);
     }
-    
+
     /**
      * Puts a little endian word into the payload.
      * 
      * @param value The world value to put.
      */
-    public void putWordLe( int value )
-    {
-        payload[ offset++ ] = (byte) value;
-        payload[ offset++ ] = (byte) ( value >> 8 );
+    public void putWordLe(int value) {
+        payload[offset++] = (byte) value;
+        payload[offset++] = (byte) (value >> 8);
     }
-    
+
+    /**
+     * Gets a little endian word from the buffer.
+     *
+     * @return The word value.
+     */
+    public int getUwordLe() {
+        offset += 2;
+        return ((payload[offset - 1] & 0xFF) << 8) + (payload[offset - 2] & 0xff);
+    }
+
     /**
      * Puts a little endian word plus 128 into the payload.
      * 
      * @param value The world value to put.
      */
-    public void putWordLe128( int value )
-    {
-        payload[ offset++ ] = (byte) ( value + 128 );
-        payload[ offset++ ] = (byte) ( value >> 8 );
+    public void putWordLe128(int value) {
+        payload[offset++] = (byte) (value + 128);
+        payload[offset++] = (byte) (value >> 8);
+    }
+
+    /**
+     * Gets a little endian word minus 128 from the buffer.
+     *
+     * @return The word value.
+     */
+    public int getUwordLe128() {
+        offset += 2;
+        return ((payload[offset - 1] & 0xFF) << 8) + (payload[offset - 2] - 128 & 0xff);
     }
 
     /**
@@ -211,12 +238,11 @@ public final class Buffer {
      *
      * @return The tri value.
      */
-    public int getUtri( )
-    {
+    public int getUtri() {
         offset += 3;
-        return (payload[ offset - 3 ] & 0xFF) << 16 | 
-               (payload[ offset - 2 ] & 0xFF) << 8  |
-               (payload[ offset - 1] & 0xFF);
+        return (payload[offset - 3] & 0xFF) << 16
+                | (payload[offset - 2] & 0xFF) << 8
+                | (payload[offset - 1] & 0xFF);
     }
 
     /**
@@ -224,12 +250,11 @@ public final class Buffer {
      *
      * @param value The value to put.
      */
-    public void putDword( int value )
-    {
-        payload[ offset++ ] = (byte) (value >> 24);
-        payload[ offset++ ] = (byte) (value >> 16);
-        payload[ offset++ ] = (byte) (value >> 8);
-        payload[ offset++ ] = (byte)  value;
+    public void putDword(int value) {
+        payload[offset++] = (byte) (value >> 24);
+        payload[offset++] = (byte) (value >> 16);
+        payload[offset++] = (byte) (value >> 8);
+        payload[offset++] = (byte) value;
     }
 
     /**
@@ -237,13 +262,12 @@ public final class Buffer {
      *
      * @return The dword value.
      */
-    public int getDword( )
-    {
+    public int getDword() {
         offset += 4;
-        return (payload[offset - 4] & 0xFF) << 24 |
-               (payload[offset - 3] & 0xFF) << 16 |
-               (payload[offset - 2] & 0xFF) << 8  |
-               (payload[offset - 1] & 0xFF);
+        return (payload[offset - 4] & 0xFF) << 24
+                | (payload[offset - 3] & 0xFF) << 16
+                | (payload[offset - 2] & 0xFF) << 8
+                | (payload[offset - 1] & 0xFF);
     }
 
     /**
@@ -251,12 +275,11 @@ public final class Buffer {
      *
      * @param value The value to put.
      */
-    public void putDwordLe( int value )
-    {
-        payload[ offset++ ] = (byte)  value;
-        payload[ offset++ ] = (byte) (value >> 8);
-        payload[ offset++ ] = (byte) (value >> 16);
-        payload[ offset++ ] = (byte) (value >> 24);
+    public void putDwordLe(int value) {
+        payload[offset++] = (byte) value;
+        payload[offset++] = (byte) (value >> 8);
+        payload[offset++] = (byte) (value >> 16);
+        payload[offset++] = (byte) (value >> 24);
 
     }
 
@@ -265,13 +288,12 @@ public final class Buffer {
      *
      * @return The dword value.
      */
-    public int getDwordA( )
-    {
+    public int getDwordA() {
         offset += 4;
-        return (payload[offset - 4] & 0xFF) << 8  |
-               (payload[offset - 3] & 0xFF)       |
-               (payload[offset - 2] & 0xFF) << 24 |
-               (payload[offset - 1] & 0xFF) << 16;
+        return (payload[offset - 4] & 0xFF) << 8
+                | (payload[offset - 3] & 0xFF)
+                | (payload[offset - 2] & 0xFF) << 24
+                | (payload[offset - 1] & 0xFF) << 16;
     }
 
     /**
@@ -279,12 +301,11 @@ public final class Buffer {
      *
      * @param value The value to put.
      */
-    public void putDwordB( int value )
-    {
-        payload[ offset++ ] = (byte) (value >> 16);
-        payload[ offset++ ] = (byte) (value >> 24);
-        payload[ offset++ ] = (byte)  value;
-        payload[ offset++ ] = (byte) (value >> 8);
+    public void putDwordB(int value) {
+        payload[offset++] = (byte) (value >> 16);
+        payload[offset++] = (byte) (value >> 24);
+        payload[offset++] = (byte) value;
+        payload[offset++] = (byte) (value >> 8);
     }
 
     /**
@@ -292,17 +313,16 @@ public final class Buffer {
      *
      * @return The qword value.
      */
-    public long getQword( )
-    {
+    public long getQword() {
         offset += 8;
-        return (payload[offset - 8] & 0xFFL) << 56 |
-               (payload[offset - 7] & 0xFFL) << 48 |
-               (payload[offset - 6] & 0xFFL) << 40 |
-               (payload[offset - 5] & 0xFFL) << 32 |
-               (payload[offset - 4] & 0xFFL) << 24 |
-               (payload[offset - 3] & 0xFFL) << 16 |
-               (payload[offset - 2] & 0xFFL) << 8  |
-                payload[offset - 1] & 0xFF;
+        return (payload[offset - 8] & 0xFFL) << 56
+                | (payload[offset - 7] & 0xFFL) << 48
+                | (payload[offset - 6] & 0xFFL) << 40
+                | (payload[offset - 5] & 0xFFL) << 32
+                | (payload[offset - 4] & 0xFFL) << 24
+                | (payload[offset - 3] & 0xFFL) << 16
+                | (payload[offset - 2] & 0xFFL) << 8
+                | payload[offset - 1] & 0xFF;
     }
 
     /**
@@ -310,11 +330,10 @@ public final class Buffer {
      *
      * @param str The string to encode into the payload.
      */
-    public void putJstr( String str )
-    {
+    public void putJstr(String str) {
         int length = str.length();
-        System.arraycopy( str.getBytes() , 0 , payload , offset , length );
-        payload[ offset + length ] = 0;
+        System.arraycopy(str.getBytes(), 0, payload, offset, length);
+        payload[offset + length] = 0;
         offset += length + 1;
     }
 
@@ -323,54 +342,49 @@ public final class Buffer {
      *
      * @return The string.
      */
-    public String getJstr( )
-    {
+    public String getJstr() {
         int start = offset;
-        while( payload[ offset++ ] != 0 );
-        return new String( payload , start , offset - start - 1 );
+        while (payload[offset++] != 0);
+        return new String(payload, start, offset - start - 1);
     }
-    
+
     /**
      * Gets if bit access is active for this buffer.
      * 
      * @return If bit access is active.
      */
-    public boolean isBitAccessActive( )
-    {
+    public boolean isBitAccessActive() {
         return bitOffset != -1;
     }
-    
+
     /**
      * Initializes the bit offset.
      */
-    public void initializeBitOffset( ) 
-    {
+    public void initializeBitOffset() {
         bitOffset = offset * 8;
     }
-    
+
     /**
      * Sets the current offset of the byte buffer from the bit offset.
      */
-    public void resetBitOffset( ) 
-    {
+    public void resetBitOffset() {
         offset = (bitOffset + 7) / 8;
         bitOffset = -1;
     }
-    
+
     /**
      * Puts a value into the payload array.
      *
      * @param value The value to putBits into the payload array.
      * @param amountBits The amount of bits to write the value as.
      */
-    public void putBits( int value , int amountBits ) 
-    {
+    public void putBits(int value, int amountBits) {
         int byteOffset = bitOffset >> 3;
         int off = 8 - (bitOffset & 7);
         bitOffset += amountBits;
         for (; amountBits > off; off = 8) {
             payload[byteOffset] &= ~MASKS[off];
-            payload[byteOffset] |= value >> (amountBits - off) & MASKS[off];            
+            payload[byteOffset] |= value >> (amountBits - off) & MASKS[off];
             amountBits -= off;
             byteOffset++;
         }
@@ -379,14 +393,14 @@ public final class Buffer {
             payload[byteOffset] |= value & MASKS[off];
         } else {
             payload[byteOffset] &= ~MASKS[amountBits] << (off - amountBits);
-            payload[byteOffset] |= (value & MASKS[amountBits]) << (off - amountBits);            
+            payload[byteOffset] |= (value & MASKS[amountBits]) << (off - amountBits);
         }
     }
-    
-     static {
+
+    static {
         MASKS = new int[32];
         for (int i = 0; i < 32; i++) {
             MASKS[i] = (1 << i) - 1;
         }
-    } 
+    }
 }

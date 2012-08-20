@@ -14,7 +14,6 @@ import com.evelus.frontier.game.widgets.WidgetLoader;
 import com.evelus.frontier.listeners.widgets.WindowListener;
 import com.evelus.frontier.net.game.frames.DisplayOverlayFrame;
 import com.evelus.frontier.net.game.frames.DisplayWindowFrame;
-import com.evelus.frontier.net.game.frames.CloseWidgetsFrame;
 import com.evelus.frontier.net.game.frames.SetTabWidgetFrame;
 
 /**
@@ -27,6 +26,11 @@ public final class WidgetHandler {
      * The default tab widgets.
      */
     private static final int[] DEFAULT_TAB_WIDGETS;
+
+    /**
+     * The widget loader for this widget handler.
+     */
+    private static WidgetLoader widgetLoader;
     
     /**
      * Constructs a new {@link WidgetHandler};
@@ -80,11 +84,11 @@ public final class WidgetHandler {
     public void setWindow( int id )
     {
         if( windowId != id ) {
-            WidgetDefinition definition = WidgetLoader.getInstance().getWindow( id );
+            WidgetDefinition definition = widgetLoader.getWindow( id );
             if( definition == null ) {
                 return;
             }
-            WindowListener listener = WidgetLoader.getInstance().getWindowListener( definition.getListenerId() );
+            WindowListener listener = widgetLoader.getWindowListener( definition.getListenerId() );
             if( listener != null ) {
                 WidgetEvent event = new WidgetEvent( player );
                 listener.onOpen( event );
@@ -107,14 +111,18 @@ public final class WidgetHandler {
         }
     }
 
+    public void setTabOverlay( int i ) {
+
+    }
+
     /**
      * Closes all the displayed widgets.
      */
     public void closeWidgets( )
     {
         if( windowId != -1 ) {
-            WidgetDefinition definition = WidgetLoader.getInstance().getWindow( windowId );
-            WindowListener listener = WidgetLoader.getInstance().getWindowListener( definition.getWindowId() );
+            WidgetDefinition definition = widgetLoader.getWindow( windowId );
+            WindowListener listener = widgetLoader.getWindowListener( definition.getWindowId() );
             if( listener != null ) {
                 WidgetEvent event = new WidgetEvent( player );
                 listener.onClose( event );
@@ -163,6 +171,16 @@ public final class WidgetHandler {
     public void updateTab( int id )
     {
         player.sendFrame( new SetTabWidgetFrame( id , tabWidgetIds[ id ] ) );
+    }
+
+    /**
+     * Sets the widget loader for this widget handler.
+     *
+     * @param loader The widget loader.
+     */
+    public static void setWidgetLoader( WidgetLoader loader )
+    {
+        widgetLoader = loader;
     }
     
     static {

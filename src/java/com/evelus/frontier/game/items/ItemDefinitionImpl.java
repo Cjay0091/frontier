@@ -13,7 +13,7 @@ import com.evelus.frontier.io.Buffer;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class ItemDefinitionImpl {
+public final class ItemDefinitionImpl implements ItemDefinition {
     
     /**
      * Constructs a new {@link ItemDefinition};

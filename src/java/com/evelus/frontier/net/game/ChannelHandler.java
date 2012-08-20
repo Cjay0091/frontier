@@ -45,7 +45,7 @@ public final class ChannelHandler extends SimpleChannelHandler {
             ctx.getChannel().close();
             return;
         }
-        session.setFrameDecoder( InitialFrameDecoder.getInstance() );
+        session.setHandler( new InitialSessionHandler(session) );
         logger.log(Level.INFO, "Connection accepted [address=" + ctx.getChannel().getRemoteAddress() + "]");
         ctx.getChannel().getPipeline().addFirst( "decoder" , new Decoder( session ) );
         ctx.setAttachment( session );
@@ -68,7 +68,7 @@ public final class ChannelHandler extends SimpleChannelHandler {
             session.destroy();
             return;
         }
-        session.getFrameDecoder().decode(session, frame);
+        session.decodeFrame(frame);
     }
 
     @Override

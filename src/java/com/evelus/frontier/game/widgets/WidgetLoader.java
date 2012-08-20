@@ -29,16 +29,11 @@ public final class WidgetLoader implements WidgetController {
      * The logger instance for this class.
      */
     private static final Logger logger = Logger.getLogger(ItemLoader.class.getSimpleName());
-    
-    /**
-     * The instance of this class.
-     */
-    private static WidgetLoader instance;
 
     /**
      * Construct a new {@link WidgetLoader};
      */
-    private WidgetLoader ( )
+    public WidgetLoader ( )
     {
         lookupMap = new HashMap<Integer, Integer>();
     }
@@ -260,18 +255,5 @@ public final class WidgetLoader implements WidgetController {
             return null;
         }
         return definitions[ id ];
-    }
-    
-    /**
-     * Gets the instance of this widget loader.
-     * 
-     * @return The instance.
-     */
-    public static WidgetLoader getInstance( )
-    {
-        if( instance == null ) {
-            instance = new WidgetLoader( );
-        }
-        return instance;
     }
 }

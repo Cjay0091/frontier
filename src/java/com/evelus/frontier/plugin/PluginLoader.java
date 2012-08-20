@@ -7,8 +7,8 @@
 
 package com.evelus.frontier.plugin;
 
-import com.evelus.frontier.game.items.ItemLoader;
-import com.evelus.frontier.game.widgets.WidgetLoader;
+import com.evelus.frontier.game.items.ItemController;
+import com.evelus.frontier.game.widgets.WidgetController;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -29,14 +29,9 @@ public final class PluginLoader implements PluginController {
     private final static Logger logger = Logger.getLogger( PluginLoader.class.getSimpleName() );
     
     /**
-     * The instance of this class.
-     */
-    private static PluginLoader instance;
-    
-    /**
      * Construct a new {@link PluginLoader};
      */
-    private PluginLoader ( ) 
+    public PluginLoader ( )
     { 
         classLoaders = new HashMap<String, URLClassLoader>();
         plugins = new HashMap<String, Plugin>();
@@ -56,6 +51,16 @@ public final class PluginLoader implements PluginController {
      * The plugin context for this plugin loader.
      */
     private PluginContext context;
+    
+    /**
+     * The widget controller.
+     */
+    private WidgetController widgetController;
+
+    /**
+     * The item controller.
+     */
+    private ItemController itemController;
     
     /**
      * Loads all the plugins within the path.
@@ -105,22 +110,20 @@ public final class PluginLoader implements PluginController {
     public PluginContext getContext() {
         if( context == null ) {
             context = new PluginContext();
-            context.provideWidgetController( WidgetLoader.getInstance() );
-            context.provideItemController( ItemLoader.getInstance() );
+            context.provideWidgetController(widgetController);
+            context.provideItemController(itemController);
         }
         return context;
     }
-    
+
     /**
-     * Gets the instance of this class.
-     * 
-     * @return The instance.
+     * Sets the controllers.
+     *
+     * @param widgetController The widget controller.
+     * @param itemController The item controller.
      */
-    public static PluginLoader getInstance( )
-    {
-        if( instance == null ) {
-            instance = new PluginLoader( );
-        }
-        return instance;
+    public void setControllers(WidgetController widgetController, ItemController itemController) {
+        this.widgetController = widgetController;
+        this.itemController = itemController;
     }
 }

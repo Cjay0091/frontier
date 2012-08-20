@@ -24,14 +24,9 @@ public final class ItemLoader implements ItemController {
     private static final Logger logger = Logger.getLogger(ItemLoader.class.getSimpleName());
 
     /**
-     * The instance of this item loader.
-     */
-    private static ItemLoader instance;
-
-    /**
      * Constructs a new {@link ItemLoader};
      */
-    private ItemLoader ( ) { }
+    public ItemLoader ( ) { }
 
     /**
      * The definitions for this item loader.
@@ -110,18 +105,5 @@ public final class ItemLoader implements ItemController {
             return null;
         }
         return listeners[ id ];
-    }
-
-    /**
-     * Gets the instance of this class.
-     *
-     * @return The instance.
-     */
-    public static ItemLoader getInstance( )
-    {
-        if( instance == null ) {
-            instance = new ItemLoader( );
-        }
-        return instance;
     }
 }

@@ -27,6 +27,7 @@ public final class IncomingFrame {
     public IncomingFrame ( int id , int size )
     {
         this.id = id;
+        this.size = size;
         buffer = new byte[ size ];
     }
 
@@ -34,6 +35,11 @@ public final class IncomingFrame {
      * The id of this frame.
      */
     private int id;
+
+    /**
+     * The size of this frame.
+     */
+    private int size;
 
     /**
      * The buffer for this frame.
@@ -48,6 +54,16 @@ public final class IncomingFrame {
     public int getId( )
     {
         return id;
+    }
+
+    /**
+     * Gets the size of this frame.
+     *
+     * @return The size.
+     */
+    public int getSize( )
+    {
+        return size;
     }
 
     /**
