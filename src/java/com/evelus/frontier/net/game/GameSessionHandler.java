@@ -108,7 +108,6 @@ public class GameSessionHandler implements SessionHandler {
             if (item == null || item.getId() != itemId) {
                 return;
             }
-
             ItemDefinitionImpl itemDefinition = itemLoader.getDefinition(itemId);
             ItemListener listener = itemLoader.getListener(itemDefinition.getListenerId());
             if (listener != null) {

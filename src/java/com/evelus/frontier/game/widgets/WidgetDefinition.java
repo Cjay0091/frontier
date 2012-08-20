@@ -125,6 +125,15 @@ public final class WidgetDefinition {
     {
         return hash;
     }
+
+    /**
+     * Gets the parent id of this widget.
+     *
+     * @return The parent id.
+     */
+    public int getParentId() {
+        return hash >> 16;
+    }
     
     /**
      * Gets the type of this widget.

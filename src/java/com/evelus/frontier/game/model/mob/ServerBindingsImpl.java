@@ -5,7 +5,7 @@
  * Written by Hadyn Richard (sini@evel.us), July 2012
  */
 
-package com.evelus.frontier.game.model.player;
+package com.evelus.frontier.game.model.mob;
 
 import com.evelus.frontier.util.LinkedArrayList;
 import java.util.HashMap;

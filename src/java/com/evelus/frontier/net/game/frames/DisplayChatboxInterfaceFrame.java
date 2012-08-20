@@ -13,13 +13,15 @@ import com.evelus.frontier.net.game.OutgoingFrame;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class DisplayOverlayFrame extends OutgoingFrame {
+public final class DisplayChatboxInterfaceFrame extends OutgoingFrame {
 
     /**
      * Constructs a new {@link DisplayWidgetFrame};
+     *
+     * @param parentId The parent id of the widget to display.
      */
-    public DisplayOverlayFrame(int parentId) {
-        super(219, OutgoingFrame.STATIC_SIZE);
+    public DisplayChatboxInterfaceFrame(int parentId) {
+        super(6, OutgoingFrame.STATIC_SIZE);
         this.parentId = parentId;
     }
     /**
@@ -29,6 +31,6 @@ public final class DisplayOverlayFrame extends OutgoingFrame {
 
     @Override
     public void encode(Buffer buffer) {
-        buffer.putWord128(parentId);
+        buffer.putWordLe(parentId);
     }
 }

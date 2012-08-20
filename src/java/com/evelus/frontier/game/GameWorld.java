@@ -98,6 +98,7 @@ public final class GameWorld implements Runnable {
                 }
                 long startTime = System.currentTimeMillis();
                 for(GamePlayer player : players) {
+                    player.updateEffects();
                     player.update();
                     player.updateMovement();
                     player.updateLocation();
@@ -113,7 +114,6 @@ public final class GameWorld implements Runnable {
             }
         } catch(Throwable t) {
             logger.log(Level.INFO, "Exception thrown while handling the logic for the world");
-            t.printStackTrace();
         }
     }
 
