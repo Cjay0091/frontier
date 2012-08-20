@@ -65,9 +65,19 @@ public final class WidgetSetup {
         private int containerSize;
         
         /**
-         * The id of the button for this widget.
+         * The button id for this widget.
          */
         private int buttonId;
+
+        /**
+         * The window id for this widget.
+         */
+        private int windowId;
+
+        /**
+         * The listener id for this widget.
+         */
+        private int listenerId;
 
         /**
          * Constructs a new {@link Definition};
@@ -78,6 +88,9 @@ public final class WidgetSetup {
             hash = -1;
             type = -1;
             containerSize = -1;
+            buttonId = -1;
+            windowId = -1;
+            listenerId = -1;
         }
     }
     
@@ -167,8 +180,14 @@ public final class WidgetSetup {
                     definition.containerId = results.getInt("container_id");
                     definition.containerSize = results.getInt("container_size");
                 }
-                if( type == WidgetDefinition.BUTTON_TYPE ) {
+                if( type == WidgetDefinition.BUTTON_TYPE || type == WidgetDefinition.WINDOW_TYPE ) {
                     definition.buttonId = results.getInt("button_id");
+                }
+                if( type == WidgetDefinition.WINDOW_TYPE ) {
+                    definition.windowId = results.getInt("window_id");
+                }
+                if( type == WidgetDefinition.BUTTON_TYPE || type == WidgetDefinition.WINDOW_TYPE ) {
+                    definition.listenerId = results.getInt("listener_id");
                 }
             }
         } finally {
@@ -195,6 +214,14 @@ public final class WidgetSetup {
         
         if( definition.type == WidgetDefinition.BUTTON_TYPE ) {
             writeWord( os , definition.buttonId );
+        }
+
+        if( definition.type == WidgetDefinition.WINDOW_TYPE ) {
+            writeWord( os , definition.windowId );
+        }
+
+        if( definition.type == WidgetDefinition.BUTTON_TYPE || definition.type == WidgetDefinition.WINDOW_TYPE ) {
+            writeWord( os , definition.listenerId );
         }
     }
 

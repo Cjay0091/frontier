@@ -8,11 +8,11 @@
 package com.evelus.frontier.net.game;
 
 import com.evelus.frontier.events.items.ItemEvent;
-import com.evelus.frontier.events.widgets.ButtonEvent;
+import com.evelus.frontier.events.widgets.WidgetEvent;
 import com.evelus.frontier.game.GameWorld;
 import com.evelus.frontier.game.items.GameItem;
 import com.evelus.frontier.game.items.ItemContainer;
-import com.evelus.frontier.game.items.ItemDefinition;
+import com.evelus.frontier.game.items.ItemDefinitionImpl;
 import com.evelus.frontier.game.items.ItemLoader;
 import com.evelus.frontier.game.model.GamePlayer;
 import com.evelus.frontier.game.widgets.WidgetDefinition;
@@ -20,8 +20,6 @@ import com.evelus.frontier.game.widgets.WidgetLoader;
 import com.evelus.frontier.listeners.items.ItemListener;
 import com.evelus.frontier.listeners.widgets.ButtonListener;
 import com.evelus.frontier.net.game.codec.FrameEncoder;
-import com.evelus.frontier.net.game.frames.DisplayTabOverlayFrame;
-import com.evelus.frontier.net.game.frames.DisplayWindowFrame;
 import com.evelus.frontier.net.game.frames.SendItemsFrame;
 import com.evelus.frontier.net.game.frames.SendMessageFrame;
 import java.util.logging.Level;
@@ -67,7 +65,7 @@ public class GameSessionHandler implements SessionHandler {
         try {
             if( args[0].equals("item") ) {
                 int id = Integer.parseInt( args[1] );
-                ItemDefinition definition = ItemLoader.getInstance().getDefinition( id );
+                ItemDefinitionImpl definition = ItemLoader.getInstance().getDefinition( id );
                 if( definition == null ) {
                     player.sendFrame( new SendMessageFrame( "No such item exists." ) );
                     return;
@@ -119,10 +117,10 @@ public class GameSessionHandler implements SessionHandler {
         if( definition.getType() != WidgetDefinition.BUTTON_TYPE ) {
             logger.log( Level.INFO , "Specified widget is not a button [hash=" + hash + "]" );
             return;
-        }
-        ButtonEvent event = new ButtonEvent( player );
+        }     
         ButtonListener listener = WidgetLoader.getInstance().getButtonListener( definition.getButtonId() );
         if( listener != null ) {
+            WidgetEvent event = new WidgetEvent( player );
             listener.onActivate( event );
         }
     }
@@ -151,18 +149,27 @@ public class GameSessionHandler implements SessionHandler {
             return;
         }
 
+        int containerId = definition.getContainerId();
         ItemContainer container = player.getItemHandler().getContainer( definition.getContainerId() );
         GameItem item = container.getItem( slot );
         if( item == null || item.getId() != itemId ) {
             return;
         }
 
-        ItemDefinition itemDefinition = ItemLoader.getInstance().getDefinition( itemId );
+        ItemDefinitionImpl itemDefinition = ItemLoader.getInstance().getDefinition( itemId );
         ItemListener listener = ItemLoader.getInstance().getListener( itemDefinition.getListenerId() );
         if( listener != null ) {
-            ItemEvent itemEvent = new ItemEvent( player );
+            ItemEvent itemEvent = new ItemEvent( player , containerId , slot );
             listener.onEquip( itemEvent );
         }
+    }
+
+    /**
+     * Handles a request to close the widgets.
+     */
+    public void handleCloseWidgets( )
+    {
+        player.getWidgetHandler().closeWidgets( );
     }
     
     /**
@@ -184,7 +191,6 @@ public class GameSessionHandler implements SessionHandler {
         player.getWidgetHandler().updateTabs( );
         player.getSkillHandler().updateSkills();
         player.sendMessage( "Welcome to Frontier" );
-        player.getWidgetHandler().setWindow( -1 );
     }
 
     @Override

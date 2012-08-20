@@ -36,7 +36,7 @@ public final class ItemLoader implements ItemController {
     /**
      * The definitions for this item loader.
      */
-    private ItemDefinition[] definitions;
+    private ItemDefinitionImpl[] definitions;
 
     /**
      * The listeners for this item loader.
@@ -55,11 +55,11 @@ public final class ItemLoader implements ItemController {
             dis.readFully( buffer.getPayload() );
             int amountDefs = buffer.getUword();
             int maximumDef = buffer.getUword();
-            definitions = new ItemDefinition[ maximumDef + 1 ];
+            definitions = new ItemDefinitionImpl[ maximumDef + 1 ];
             int maximumListenerId = -1;
             for( int i = 0 ; i < amountDefs ; i++ ) {
                 int id = buffer.getUword();
-                ItemDefinition definition = definitions[ id ] = new ItemDefinition( id );
+                ItemDefinitionImpl definition = definitions[ id ] = new ItemDefinitionImpl( id );
                 while(true) {
                     int opcode = buffer.getUbyte();
                     if( opcode == 0 )
@@ -91,7 +91,7 @@ public final class ItemLoader implements ItemController {
      * @param id    The id of the definition to get.
      * @return      The definition.
      */
-    public ItemDefinition getDefinition( int id ) {
+    public ItemDefinitionImpl getDefinition( int id ) {
         if( id < 0 || id >= definitions.length) {
             return null;
         }

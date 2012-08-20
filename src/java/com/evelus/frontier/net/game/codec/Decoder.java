@@ -120,6 +120,7 @@ public final class Decoder extends FrameDecoder {
         FRAME_SIZES[  21 ] =  0;                           // Dunno
         FRAME_SIZES[  29 ] =  8;                           // Equip
         FRAME_SIZES[  54 ] =  4;                           // Widget click
+        FRAME_SIZES[  70 ] =  0;                           // Widget close
         FRAME_SIZES[  86 ] =  0;                           // Dunno
         FRAME_SIZES[ 141 ] =  4;                           // Dunno
         FRAME_SIZES[ 162 ] =  4;                           // Mouse click

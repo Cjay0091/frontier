@@ -42,6 +42,9 @@ public final class GameFrameDecoder implements FrameDecoder {
             case 54:
                 handler.handleClickButton( buffer.getDword() );
                 return;
+            case 70:
+                handler.handleCloseWidgets( );
+                return;
             case 174:
                 handler.handleCommand( buffer.getJstr() );
                 return;

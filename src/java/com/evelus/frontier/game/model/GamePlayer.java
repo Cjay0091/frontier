@@ -17,6 +17,7 @@ import com.evelus.frontier.game.model.player.WidgetHandler;
 import com.evelus.frontier.game.update.SceneList;
 import com.evelus.frontier.net.game.OutgoingFrame;
 import com.evelus.frontier.net.game.Session;
+import com.evelus.frontier.net.game.frames.CloseWidgetsFrame;
 import com.evelus.frontier.net.game.frames.PlayerUpdateFrame;
 import com.evelus.frontier.net.game.frames.RebuildMapFrame;
 import com.evelus.frontier.net.game.frames.SendMessageFrame;
@@ -212,15 +213,22 @@ public class GamePlayer extends GameMob implements Player {
     }
 
     @Override
-    public void displayOverlay(int id)
+    public void displayOverlay( int id )
     {
         widgetHandler.setOverlay( id );
+    }
+    
+    @Override
+    public void closeOverlay()
+    {
+        widgetHandler.setOverlay( -1 );
     }
 
     @Override
     public void closeDisplayedWidgets()
     {
-        widgetHandler.reset( );
+        sendFrame( new CloseWidgetsFrame( ) );
+        widgetHandler.closeWidgets( );
     }
 
     @Override

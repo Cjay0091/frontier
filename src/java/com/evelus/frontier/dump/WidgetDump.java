@@ -460,7 +460,7 @@ public final class WidgetDump {
             writer.append("Alpha: " + widget.alpha + "\n");
             writeConditions(writer, widget);
             writeScripts(writer, widget);
-            if (widget.type == 2) {
+            if (widget.type == 2 || widget.type == 7) {
                 writer.append("Options:\n");
                 for (int i = 0; i < 5; i++) {
                     writer.append("\tOption " + i + ": " + widget.itemOptions[ i] + "\n");

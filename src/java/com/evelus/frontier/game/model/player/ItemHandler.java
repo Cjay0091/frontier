@@ -24,8 +24,14 @@ public final class ItemHandler {
      */
     public ItemHandler ( GamePlayer gamePlayer )
     { 
-        containers = new ItemContainer[ WidgetLoader.getInstance().getMaximumContainer() + 1 ];
-        for( WidgetDefinition definition : WidgetLoader.getInstance().getContainers( ) ) {
+
+        WidgetDefinition[] definitions = WidgetLoader.getInstance().getContainers( );
+        containers = new ItemContainer[ definitions.length ];
+        for( int i = 0 ; i < definitions.length ; i++ ) {
+            WidgetDefinition definition = definitions[ i ];
+            if( definition == null ) {
+                continue;
+            }
             containers[ definition.getContainerId() ] = new ItemContainer( definition.getContainerSize() );
         }
         this.gamePlayer = gamePlayer;

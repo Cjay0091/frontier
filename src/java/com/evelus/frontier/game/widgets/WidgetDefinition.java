@@ -24,6 +24,11 @@ public final class WidgetDefinition {
      * The button widget type.
      */
     public static final int BUTTON_TYPE = 2;
+
+    /**
+     * The window widget type.
+     */
+    public static final int WINDOW_TYPE = 3;
     
     /**
      * Constructs a new {@link WidgetDefinition};
@@ -39,6 +44,7 @@ public final class WidgetDefinition {
         containerId = -1;
         containerSize = -1;
         buttonId = -1;
+        listenerId = -1;
     }
     
     /**
@@ -70,6 +76,16 @@ public final class WidgetDefinition {
      * The button id of this widget.
      */
     private int buttonId;
+
+    /**
+     * The window id of this widget.
+     */
+    private int windowId;
+
+    /**
+     * The listener id of this widget.
+     */
+    private int listenerId;
     
     /**
      * Loads the data for this definition.
@@ -85,6 +101,18 @@ public final class WidgetDefinition {
         }
         if( type == BUTTON_TYPE ) {
             buttonId = buffer.getUword();
+        }
+        if( type == WINDOW_TYPE ) {
+            windowId = buffer.getUword();
+            if( windowId == 65535 ) {
+                windowId = -1;
+            }
+        }
+        if( type == BUTTON_TYPE || type == WINDOW_TYPE ) {
+            listenerId = buffer.getUword();
+            if( listenerId == 65535 ) {
+                listenerId = -1;
+            }
         }
     }
 
@@ -136,5 +164,25 @@ public final class WidgetDefinition {
     public int getButtonId( )
     {
         return buttonId;
+    }
+
+    /**
+     * Gets the window id of this widget.
+     *
+     * @return The window id.
+     */
+    public int getWindowId( )
+    {
+        return windowId;
+    }
+
+    /**
+     * Gets the listener id of this widget.
+     *
+     * @return The listener id.
+     */
+    public int getListenerId( )
+    {
+        return listenerId;
     }
 }

@@ -13,14 +13,14 @@ import com.evelus.frontier.io.Buffer;
  * Evelus Development
  * Created by Hadyn Richard
  */
-public final class ItemDefinition {
+public final class ItemDefinitionImpl {
     
     /**
      * Constructs a new {@link ItemDefinition};
      *
      * @param id The id of the item.
      */
-    public ItemDefinition( int id ) 
+    public ItemDefinitionImpl( int id )
     {
         this.id = id;
         name = "";

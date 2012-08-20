@@ -10,6 +10,7 @@ package com.evelus.frontier.game.widgets;
 import com.evelus.frontier.game.items.ItemLoader;
 import com.evelus.frontier.io.Buffer;
 import com.evelus.frontier.listeners.widgets.ButtonListener;
+import com.evelus.frontier.listeners.widgets.WindowListener;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -40,8 +41,6 @@ public final class WidgetLoader implements WidgetController {
     private WidgetLoader ( )
     {
         lookupMap = new HashMap<Integer, Integer>();
-        maximumContainerId = -1;
-        maximumButtonId = -1;
     }
 
     /**
@@ -55,16 +54,6 @@ public final class WidgetLoader implements WidgetController {
     private Map<Integer, Integer> lookupMap;
     
     /**
-     * The id of the maximum container.
-     */
-    private int maximumContainerId;
-    
-    /**
-     * The id of the maximum button.
-     */
-    private int maximumButtonId;
-    
-    /**
      * The container widgets.
      */
     private WidgetDefinition[] containers;
@@ -73,6 +62,16 @@ public final class WidgetLoader implements WidgetController {
      * The button listeners.
      */
     private ButtonListener[] buttonListeners;
+
+    /**
+     * The window widgets.
+     */
+    private WidgetDefinition[] windows;
+
+    /**
+     * The window listeners.
+     */
+    private WindowListener[] windowListeners;
 
     /**
      * Loads the widget definition config from file.
@@ -88,8 +87,11 @@ public final class WidgetLoader implements WidgetController {
             int amountDefs = buffer.getUword();
             int maximumDef = buffer.getUword();
             definitions = new WidgetDefinition[ maximumDef + 1 ];
-            int amountContainers = 0;
-            int amountButtons = 0;           
+            int maximumContainerId = -1;
+            int maximumButtonId = -1;
+            int maximumButtonListenerId = -1;
+            int maximumWindowId = -1;
+            int maximumWindowListenerId = -1;
             for( int i = 0 ; i < amountDefs ; i++ ) {
                 int id = buffer.getUword();
                 int hash = buffer.getDword();
@@ -101,40 +103,51 @@ public final class WidgetLoader implements WidgetController {
                     if( containerId > maximumContainerId ) {
                         maximumContainerId = containerId;
                     }
-                    amountContainers++;
                 }
                 if( definition.getType() == WidgetDefinition.BUTTON_TYPE ) {
-                    int containerId = definition.getButtonId();
-                    if( containerId > maximumButtonId ) {
-                        maximumButtonId = containerId;
+                    int buttonId = definition.getButtonId();
+                    int listenerId = definition.getListenerId();
+                    if( buttonId > maximumButtonId ) {
+                        maximumButtonId = buttonId;
                     }
-                    amountButtons++;
+                    if( listenerId > maximumButtonListenerId ) {
+                        maximumButtonListenerId = listenerId;
+                    }
+                }
+                if( definition.getType() == WidgetDefinition.WINDOW_TYPE ) {
+                    int windowId = definition.getWindowId();
+                    int listenerId = definition.getListenerId();
+                    if( windowId > maximumWindowId ) {
+                        maximumWindowId = windowId;
+                    }
+                    if( listenerId > maximumWindowListenerId ) {
+                        maximumWindowListenerId = listenerId;
+                    }
                 }
             }
-            containers = new WidgetDefinition[ amountContainers ];
-            int counter = 0;
+            containers = new WidgetDefinition[ maximumContainerId + 1 ];
             for( int i = 0 ; i < definitions.length ; i++ ) {
                 WidgetDefinition definition = definitions[ i ];
                 if( definition == null || definition.getType() != WidgetDefinition.CONTAINER_TYPE ) {
                     continue;
                 }
-                containers[ counter++ ] = definition;
+                containers[ definition.getContainerId() ] = definition;
             }
-            buttonListeners = new ButtonListener[ maximumButtonId + 1 ];
+            windows = new WidgetDefinition[ maximumWindowId + 1 ];
+            windowListeners = new WindowListener[ maximumWindowListenerId + 1 ];
+            for( int i = 0 ; i < definitions.length ; i++ ) {
+                WidgetDefinition definition = definitions[ i ];
+                if( definition == null || definition.getType() != WidgetDefinition.WINDOW_TYPE ) {
+                    continue;
+                }
+                windows[ definition.getWindowId() ] = definition;
+            }
+            buttonListeners = new ButtonListener[ maximumButtonListenerId + 1 ];
             logger.log( Level.INFO , "Finished loading " + amountDefs + " widget definitions" );
             dis.close();
         } catch( IOException ioex ) {
             logger.log( Level.INFO , "Failed to load the widget configuration" );
         }
-    }
-    
-    /**
-     * Gets the maximum container id.
-     * 
-     * @return The maximum container id. 
-     */
-    public int getMaximumContainer() {
-        return maximumContainerId;
     }
     
     /**
@@ -147,12 +160,7 @@ public final class WidgetLoader implements WidgetController {
         return containers;
     }
     
-    /**
-     * Registers a button listener to this widget loader.
-     * 
-     * @param listener The listener to register.
-     * @param id The id of the listener to register. 
-     */
+    @Override
     public void register( ButtonListener listener, int id ) 
     {
         buttonListeners[ id ] = listener;
@@ -167,6 +175,35 @@ public final class WidgetLoader implements WidgetController {
     public ButtonListener getButtonListener( int id )
     {
         return buttonListeners[ id ];
+    }
+
+    @Override
+    public void register( WindowListener listener , int id )
+    {
+        windowListeners[ id ] = listener;
+    }
+
+    /**
+     * Gets a window listener.
+     *
+     * @param id The id of the window listener to get.
+     * @return The window listener.
+     */
+    public WindowListener getWindowListener( int id )
+    {
+        return windowListeners[ id ];
+    }
+
+    /**
+     * Looks up a widget definition from its parent and child id.
+     *
+     * @param parentId The parent id of widget to lookup.
+     * @param childId The child id of the widget to lookup.
+     * @return The definition id of the widget.
+     */
+    public int lookup( int parentId , int childId )
+    {
+        return lookup( parentId << 16 | (childId & 0xFFFF) );
     }
     
     /**
@@ -195,6 +232,20 @@ public final class WidgetLoader implements WidgetController {
             return null;
         }
         return containers[ id ];
+    }
+
+    /**
+     * Gets the definition for a widget window.
+     *
+     * @param id The id of the window to get the definition for.
+     * @return The definition.
+     */
+    public WidgetDefinition getWindow( int id )
+    {
+        if( id < 0 || id > windows.length ) {
+            return null;
+        }
+        return windows[ id ];
     }
     
     /**

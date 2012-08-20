@@ -7,7 +7,11 @@
 
 package com.evelus.frontier.game.model.player;
 
+import com.evelus.frontier.events.widgets.WidgetEvent;
 import com.evelus.frontier.game.model.GamePlayer;
+import com.evelus.frontier.game.widgets.WidgetDefinition;
+import com.evelus.frontier.game.widgets.WidgetLoader;
+import com.evelus.frontier.listeners.widgets.WindowListener;
 import com.evelus.frontier.net.game.frames.DisplayOverlayFrame;
 import com.evelus.frontier.net.game.frames.DisplayWindowFrame;
 import com.evelus.frontier.net.game.frames.CloseWidgetsFrame;
@@ -76,8 +80,17 @@ public final class WidgetHandler {
     public void setWindow( int id )
     {
         if( windowId != id ) {
+            WidgetDefinition definition = WidgetLoader.getInstance().getWindow( id );
+            if( definition == null ) {
+                return;
+            }
+            WindowListener listener = WidgetLoader.getInstance().getWindowListener( definition.getListenerId() );
+            if( listener != null ) {
+                WidgetEvent event = new WidgetEvent( player );
+                listener.onOpen( event );
+            }
+            player.sendFrame( new DisplayWindowFrame( definition.getHash() >> 16 ) );
             windowId = id;
-            player.sendFrame( new DisplayWindowFrame( id ) );
         }
     }
 
@@ -89,19 +102,25 @@ public final class WidgetHandler {
     public void setOverlay( int id )
     {
         if( overlayId != id ) {
-            overlayId = id;
             player.sendFrame( new DisplayOverlayFrame( id ) );
+            overlayId = id;
         }
     }
 
     /**
-     * Resets all the displayed widgets.
+     * Closes all the displayed widgets.
      */
-    public void reset( )
+    public void closeWidgets( )
     {
+        if( windowId != -1 ) {
+            WidgetDefinition definition = WidgetLoader.getInstance().getWindow( windowId );
+            WindowListener listener = WidgetLoader.getInstance().getWindowListener( definition.getWindowId() );
+            if( listener != null ) {
+                WidgetEvent event = new WidgetEvent( player );
+                listener.onClose( event );
+            }
+        }
         windowId = -1;
-        overlayId = -1;
-        player.sendFrame( new CloseWidgetsFrame( ) );
     }
 
     /**
@@ -153,6 +172,7 @@ public final class WidgetHandler {
         }
         DEFAULT_TAB_WIDGETS[  1 ] = 320;
         DEFAULT_TAB_WIDGETS[  3 ] = 149;
+        DEFAULT_TAB_WIDGETS[  4 ] = 387;
         DEFAULT_TAB_WIDGETS[ 10 ] = 182;
     }
 }
