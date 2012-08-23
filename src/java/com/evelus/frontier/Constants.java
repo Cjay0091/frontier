@@ -12,7 +12,7 @@ package com.evelus.frontier;
  * Created by Hadyn Richard
  */
 public final class Constants {
-
+qwerqwerqwerqewr
     /**
      * Prevent construction;
      */
